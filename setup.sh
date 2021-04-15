@@ -12,6 +12,22 @@
 #                                                                              #
 # **************************************************************************** #
 
+
+#Black        0;30     Dark Gray     1;30
+#Red          0;31     Light Red     1;31
+#Green        0;32     Light Green   1;32
+#Brown/Orange 0;33     Yellow        1;33
+#Blue         0;34     Light Blue    1;34
+#Purple       0;35     Light Purple  1;35
+#Cyan         0;36     Light Cyan    1;36
+#Light Gray   0;37     White         1;37
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
 #To Install brew
 #rm -rf $HOME/.brew && git clone --depth=1 https://github.com/Homebrew/brew $HOME/.brew && echo 'export PATH=$HOME/.brew/bin:$PATH' >> $HOME/.zshrc && source $HOME/.zshrc && brew update
 #brew install minikube
@@ -20,7 +36,10 @@ v_goinfre_path="/goinfre/csejault"
 v_kube_mac="./minikube-darwin-amd64"
 v_kube_needed_version="1.19.0"
 v_mac_os="mac"
-
+v_path_setup="/sgoinfre/goinfre/Perso/csejault/ft_services"
+v_path_dock_mysql="$v_path_setup/srcs/mysql"
+v_path_dock_wordpress="$v_path_setup/srcs/wordpress"
+v_path_dock_nginx="$v_path_setup/srcs/nginx"
 f_check_args()
 {
 	if [[ $1 != "--os="* ]]
@@ -42,6 +61,9 @@ f_check_args()
 				;;
 			"--kube-full-reset")
 				f_kube_full_reset
+				;;
+			"--docker-build")
+				f_docker_build
 				;;
 			*)
 				echo "Wrong args"
@@ -78,6 +100,7 @@ f_kube_full_reset()
 		ln -sf $v_goinfre_path/.minikube ~/.minikube
 		minikube config set vm-driver virtualbox
 		minikube start
+		eval $(minikube -p minikube docker-env)
 	fi
 }
 
@@ -90,6 +113,18 @@ f_check_kube_version()
 	fi
 }
 
-f_check_kube_version
+f_docker_build()
+{
+	echo -e "${YELLOW}=== DOCKER_BUILD ===${NC}"
+	echo -e "${YELLOW}=== mysql ===${NC}"
+	docker build -t mysql $v_path_dock_mysql
+	echo -e "${YELLOW}=== wordpress ===${NC}"
+	docker build -t wordpress $v_path_dock_wordpress
+	echo -e "${YELLOW}=== nginx ===${NC}"
+	docker build -t nginx $v_path_dock_nginx
+}
+
+
+#f_check_kube_version
 f_check_args $@ || exit 1
 exit 0

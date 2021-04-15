@@ -1,0 +1,6 @@
+
+kubectl apply -f file --namespace=mynamespace
+OU
+in the configmap 
+matadata->namespace: mynamespace
+
