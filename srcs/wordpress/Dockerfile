@@ -6,7 +6,7 @@
 #    By: csejault <csejault@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/30 12:08:38 by csejault          #+#    #+#              #
-#    Updated: 2021/04/15 12:07:49 by csejault         ###   ########.fr        #
+#    Updated: 2021/04/16 16:38:56 by csejault         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,12 @@ LABEL		maintainer="csejault"
 
 WORKDIR		/root/
 
-#INSTALL
+EXPOSE		5050
+
+ENV			ENV_DB_HOST=172.17.0.2
+
+ENTRYPOINT	["/bin/sh"]
+
 RUN			apk update && apk add --no-cache \
 			php8=8.0.2-r0 \
 			php8-common=8.0.2-r0 \
@@ -40,10 +45,5 @@ RUN			apk update && apk add --no-cache \
 			php8-xmlreader=8.0.2-r0 
 
 ADD			./srcs .
-RUN			mkdir -p /var/www && tar xvz -f wordpress-5.7-fr_FR.tar.gz -C /var/www
-#RUN			chown -vR www-data:www-data /var/www/*
-
-#NETWORK
-
-EXPOSE 5050
-ENTRYPOINT	["/bin/sh"]
+RUN			mkdir -p /var/www && tar xvz -f wordpress-5.7-fr_FR.tar.gz -C /var/www \
+			&& rm wordpress-5.7-fr_FR.tar.gz 

@@ -4,3 +4,16 @@ OU
 in the configmap 
 matadata->namespace: mynamespace
 
+
+
+procedure lancement 
+
+mysql
+pma
+wordpress
+nginx
+
+config wp
+config pma
+
+export wp conf et wp.sql

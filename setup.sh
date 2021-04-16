@@ -40,17 +40,30 @@ v_path_setup="/sgoinfre/goinfre/Perso/csejault/ft_services"
 v_path_dock_mysql="$v_path_setup/srcs/mysql"
 v_path_dock_wordpress="$v_path_setup/srcs/wordpress"
 v_path_dock_nginx="$v_path_setup/srcs/nginx"
+v_path_dock_phpmyadmin="$v_path_setup/srcs/phpmyadmin"
+
+print_success()
+{
+	echo -e "\t[${GREEN}SUCCESS${NC}]" 
+}
+
+print_failed()
+{
+	echo -e "\t[${RED}FAILED${NC}] --> EXIT" 
+	exit 1
+}
+
 f_check_args()
 {
-	if [[ $1 != "--os="* ]]
-	then
-		echo "need the os flag in first position"
-		return 1
-	else
-		v_os=$(echo $1|sed 's/--os=//g')
-		shift;
-		echo "OS = $v_os"
-	fi
+	#	if [[ $1 != "--os="* ]]
+	#	then
+	#		echo "need the os flag in first position"
+	#		return 1
+	#	else
+	#		v_os=$(echo $1|sed 's/--os=//g')
+	#		shift;
+	#		echo "OS = $v_os"
+	#	fi
 	while [[ $# > 0 ]] ;
 	do
 		arg="$1"
@@ -62,8 +75,20 @@ f_check_args()
 			"--kube-full-reset")
 				f_kube_full_reset
 				;;
-			"--docker-build")
-				f_docker_build
+			"--docker-build" | "db")
+				f_docker_build $1
+				shift
+				;;
+			"--docker-stop")
+				f_docker_stop $1
+				shift
+				;;
+			"--docker-kill" | "dk")
+				f_docker_kill $1
+				shift
+				;;
+			"--docker-clean")
+				f_docker_clean
 				;;
 			*)
 				echo "Wrong args"
@@ -113,15 +138,40 @@ f_check_kube_version()
 	fi
 }
 
+f_docker_stop()
+{
+	docker stop $(docker ps|grep $1 |awk '{print $1}')
+}
+
+f_docker_kill()
+{
+	docker kill $(docker ps|grep $1 |awk '{print $1}')
+}
+
+f_docker_clean()
+{
+	docker kill $(docker ps -q)
+	docker rm $(docker ps -a -q)
+	docker rmi $(docker images -q -f dangling=true)
+	docker rmi $(docker images -q)
+}
+
 f_docker_build()
 {
-	echo -e "${YELLOW}=== DOCKER_BUILD ===${NC}"
-	echo -e "${YELLOW}=== mysql ===${NC}"
-	docker build -t mysql $v_path_dock_mysql
-	echo -e "${YELLOW}=== wordpress ===${NC}"
-	docker build -t wordpress $v_path_dock_wordpress
-	echo -e "${YELLOW}=== nginx ===${NC}"
-	docker build -t nginx $v_path_dock_nginx
+	if [[ "$1" = "all" ]]
+	then
+		echo -e "${YELLOW}=== DOCKER_BUILD ===${NC}"
+		echo -e "${YELLOW}=== mysql ===${NC}"
+		docker build -t mysql $v_path_dock_mysql && print_success || print_failed
+		echo -e "${YELLOW}=== wordpress ===${NC}"
+		docker build -t wordpress $v_path_dock_wordpress && print_success || print_failed
+		echo -e "${YELLOW}=== nginx ===${NC}"
+		docker build -t nginx $v_path_dock_nginx && print_success || print_failed
+		echo -e "${YELLOW}=== phpmyadmin ===${NC}"
+		docker build -t phpmyadmin $v_path_dock_phpmyadmin && print_success || print_failed
+	else
+		docker build -t $1 "$v_path_setup/srcs/$1" && print_success || print_failed
+	fi
 }
 
 
