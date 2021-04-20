@@ -59,7 +59,7 @@ echo "CREATE USER '${PMA_DB_USER}'@'${DB_HOST}' IDENTIFIED BY PASSWORD '${PMA_DB
 echo -e "GRANT ALL PRIVILEGES TO [${CYAN}${WP_DB_USER}${NC}] ON [${CYAN}${WP_DB_NAME}${NC}] FOR [${CYAN}${WP_HOST}${NC}]"
 echo "GRANT ALL ON ${WP_DB_NAME}.* TO '${WP_DB_USER}'@'${WP_HOST}' IDENTIFIED BY PASSWORD '${WP_DB_USER_PASSWORD_HASHED}' WITH GRANT OPTION;"|mysql -u root && print_success || print_failed
 echo -e "GRANT ALL PRIVILEGES TO [${CYAN}${PMA_DB_USER}${NC}] ON [${CYAN}${WP_DB_NAME}${NC}] FOR [${CYAN}${PMA_HOST}${NC}]"
-echo "GRANT ALL ON ${WP_DB_NAME}.* TO '${WP_DB_USER}'@'${PMA_HOST}' IDENTIFIED BY PASSWORD '${PMA_DB_USER_PASSWORD_HASHED}' WITH GRANT OPTION;"|mysql -u root && print_success || print_failed
+echo "GRANT ALL ON ${WP_DB_NAME}.* TO '${PMA_DB_USER}'@'${PMA_HOST}' IDENTIFIED BY PASSWORD '${PMA_DB_USER_PASSWORD_HASHED}' WITH GRANT OPTION;"|mysql -u root && print_success || print_failed
 
 echo -e "GRANT ALL PRIVILEGES TO [${CYAN}${PMA_DB_USER}${NC}] ON [${CYAN}${PMA_DB_NAME}${NC}] FOR [${CYAN}${PMA_HOST}${NC}]"
 echo "GRANT ALL ON ${PMA_DB_NAME}.* TO '${PMA_DB_USER}'@'${PMA_HOST}' IDENTIFIED BY PASSWORD '${PMA_DB_USER_PASSWORD_HASHED}' WITH GRANT OPTION;"|mysql -u root && print_success || print_failed
@@ -67,10 +67,14 @@ echo "GRANT ALL ON ${PMA_DB_NAME}.* TO '${PMA_DB_USER}'@'${PMA_HOST}' IDENTIFIED
 echo -e "FLUSH PRIVILEGES"
 echo "FLUSH PRIVILEGES;"|mysql -u root && print_success || print_failed
 
-#echo -e "IMPORT SQL DB ON [${CYAN}${WP_DB_NAME}${NC}]"
-#mysql  wp_db -u root < ./wp_db.sql && print_success || print_failed
+echo -e "IMPORT SQL DB ON [${CYAN}${WP_DB_NAME}${NC}]"
+mysql  wp_db -u root < ./wp_db.sql && print_success || print_failed
+echo -e "IMPORT SQL DB ON [${CYAN}${PMA_DB_NAME}${NC}]"
+mysql phpmyadmin -u root < ./phpmyadmin.sql && print_success || print_failed
+
 rc-service mariadb stop
 ip a|grep inet
+#rc-service mariadb start
 mariadbd-safe
 
 exit 0

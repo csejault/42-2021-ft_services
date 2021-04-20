@@ -46,4 +46,4 @@ RUN			apk update && apk add --no-cache \
 
 ADD			./srcs .
 RUN			mkdir -p /var/www && tar xvz -f wordpress-5.7-fr_FR.tar.gz -C /var/www \
-			&& rm wordpress-5.7-fr_FR.tar.gz 
+			&& rm wordpress-5.7-fr_FR.tar.gz && mv wp-config.php /var/www/wordpress/

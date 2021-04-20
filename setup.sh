@@ -36,7 +36,7 @@ v_goinfre_path="/goinfre/csejault"
 v_kube_mac="./minikube-darwin-amd64"
 v_kube_needed_version="1.19.0"
 v_mac_os="mac"
-v_path_setup="/sgoinfre/goinfre/Perso/csejault/ft_services"
+v_path_setup="/home/csejault/42-2021-ft_services"
 v_path_dock_mysql="$v_path_setup/srcs/mysql"
 v_path_dock_wordpress="$v_path_setup/srcs/wordpress"
 v_path_dock_nginx="$v_path_setup/srcs/nginx"
@@ -79,7 +79,7 @@ f_check_args()
 				f_docker_build $1
 				shift
 				;;
-			"--docker-stop")
+			"--docker-stop" | "ds")
 				f_docker_stop $1
 				shift
 				;;
