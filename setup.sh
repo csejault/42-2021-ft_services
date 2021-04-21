@@ -36,7 +36,7 @@ v_goinfre_path="/goinfre/csejault"
 v_kube_mac="./minikube-darwin-amd64"
 v_kube_needed_version="1.19.0"
 v_mac_os="mac"
-v_path_setup="/home/csejault/42-2021-ft_services"
+v_path_setup="/sgoinfre/goinfre/Perso/csejault/ft_services"
 v_path_dock_mysql="$v_path_setup/srcs/mysql"
 v_path_dock_wordpress="$v_path_setup/srcs/wordpress"
 v_path_dock_nginx="$v_path_setup/srcs/nginx"
@@ -69,11 +69,17 @@ f_check_args()
 		arg="$1"
 		shift;
 		case "$arg" in
+			"--os="*)
+				v_os=$(echo $arg|sed 's/--os=//g')
+				;;
 			"--kube-reset")
 				f_kube_reset
 				;;
 			"--kube-full-reset")
 				f_kube_full_reset
+				;;
+			"--kube-init")
+				f_kube_init
 				;;
 			"--docker-build" | "db")
 				f_docker_build $1
@@ -108,6 +114,7 @@ f_kube_reset()
 		minikube stop
 		minikube delete
 		minikube start
+		eval $(minikube -p minikube docker-env)
 	fi
 }
 
@@ -127,6 +134,11 @@ f_kube_full_reset()
 		minikube start
 		eval $(minikube -p minikube docker-env)
 	fi
+}
+
+f_kube_apply()
+{
+	kubectl apply -f srcs
 }
 
 f_check_kube_version()
@@ -176,5 +188,12 @@ f_docker_build()
 
 
 #f_check_kube_version
+if [[ $# -eq 0 ]]
+then
+	eval $(minikube -p minikube docker-env)
+	f_docker_build all || exit 1
+	f_kube_apply || exit 1
+	exit 0
+fi
 f_check_args $@ || exit 1
 exit 0

@@ -27,7 +27,7 @@ $i++;
 /* Authentication type */
 $cfg['Servers'][$i]['auth_type'] = 'cookie';
 /* Server parameters */
-$cfg['Servers'][$i]['host'] = 'ENV_DB_HOST';
+$cfg['Servers'][$i]['host'] = 'ENV_MYSQL_HOST';
 $cfg['Servers'][$i]['compress'] = false;
 $cfg['Servers'][$i]['AllowNoPassword'] = false;
 
@@ -72,6 +72,7 @@ $cfg['Servers'][$i]['AllowNoPassword'] = false;
  */
 $cfg['UploadDir'] = '';
 $cfg['SaveDir'] = '';
+$cfg['TempDir'] = '/var/www/phpmyadmin/tmp';
 
 /**
  * Whether to display icons or text or both icons and text in table row

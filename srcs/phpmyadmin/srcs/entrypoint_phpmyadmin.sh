@@ -14,15 +14,14 @@ GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 NC='\033[0m' # No Color
 
-sed -i "s/ENV_WORDPRESS_HOST/$ENV_WORDPRESS_HOST/g" /etc/nginx/conf.d/csejault.conf
+ip a|grep inet
+
+sed -i "s/ENV_MYSQL_HOST/$ENV_MYSQL_HOST/g" /var/www/phpmyadmin/config.inc.php
 
 echo -e "${YELLOW}Starting background NGINX${NC}"
-nginx &
+rc-service php-fpm7 restart
+rc-service nginx restart
 ps
-echo -en "${YELLOW}check localhost response${NC}"
-#sleep 1
-#wget http://127.0.0.1/ping 1&>/dev/null && echo -e " [${GREEN}SUCCESS${NC}]" || echo -e " [${RED}FAIL${NC}]"
 echo -e "${GREEN} === SERVER STARTED === ${NC}"
 tail -f /var/log/nginx/access.log /var/log/nginx/error.log
-
 exit 0

@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress-deployment
+  labels:
+    app: wordpress
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wordpress
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      containers:
+      - name: wordpress
+        image: wordpress
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5050
+        env:
+        - name: ENV_MYSQL_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: ftservices-configmap
+              key: mysql_host
+        - name: ENV_WORDPRESS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: ftservices-configmap
+              key: wordpress_host
+        - name: ENV_PHPMYADMIN_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: ftservices-configmap
+              key: phpmyadmin_host
+        - name: ENV_WORDPRESS_SITE_ADM
+          valueFrom:
+            secretKeyRef:
+              name: ftservices-secret
+              key: wordpress_site_adm
+        - name: ENV_WORDPRESS_MYSQL_DB
+          valueFrom:
+            secretKeyRef:
+              name: ftservices-secret
+              key: wordpress_mysql_db
+        - name: ENV_WORDPRESS_SITE_ADM_PWD
+          valueFrom:
+            secretKeyRef:
+              name: ftservices-secret
+              key: wordpress_site_adm_pwd
+        - name: ENV_WORDPRESS_MYSQL_USR
+          valueFrom:
+            secretKeyRef:
+              name: ftservices-secret
+              key: wordpress_mysql_usr
+        - name: ENV_WORDPRESS_MYSQL_USR_PWD
+          valueFrom:
+            secretKeyRef:
+              name: ftservices-secret
+              key: wordpress_mysql_usr_pwd
+        - name: ENV_PHPMYADMIN_MYSQL_USR
+          valueFrom:
+            secretKeyRef:
+              name: ftservices-secret
+              key: phpmyadmin_mysql_usr
+        - name: ENV_PHPMYADMIN_MYSQL_USR_PWD
+          valueFrom:
+            secretKeyRef:
+              name: ftservices-secret
+              key: phpmyadmin_mysql_usr_pwd
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wordpress-service
+spec:
+  selector:
+    app: wordpress
+  ports:
+    - protocol: TCP
+      port: 5050
+      targetPort: 5050
+  type: LoadBalancer
