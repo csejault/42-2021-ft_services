@@ -76,6 +76,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: wordpress-service
+  annotations:
+    metallb.universe.tf/allow-shared-ip: shared
+    metallb.universe.tf/address-pool: pool-ftservices
 spec:
   selector:
     app: wordpress

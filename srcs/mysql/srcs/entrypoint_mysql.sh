@@ -19,12 +19,9 @@ WP_DB_NAME=wp_db
 WP_DB_USER="$ENV_WORDPRESS_MYSQL_USR"
 PMA_DB_NAME=phpmyadmin
 PMA_DB_USER="$ENV_PHPMYADMIN_MYSQL_USR"
-WP_DB_USER_PASSWORD_HASHED=*0C61DA4C645875C43890D1F29DF8710DADC610DA
-PMA_DB_USER_PASSWORD_HASHED=*A51BB7F8CC7E57DC1651A55F5BBC7AF750320054
-#WP_DB_USER_PASSWORD_CLEAR='Le mdp de mysql est ceci!'
-#PMA_DB_USER_PASSWORD_CLEAR='Le mdp de pma est ceci!'
 DB_HOST=localhost
-WP_HOST="$ENV_WORDPRESS_HOST"
+#WP_HOST="$ENV_WORDPRESS_HOST"
+WP_HOST="%"
 PMA_HOST="$ENV_PHPMYADMIN_HOST"
 
 print_success()
@@ -41,6 +38,10 @@ print_failed()
 echo -e "STARTING MYSQL"
 rc-service mariadb start
 #service mysql start>>/dev/null && print_success || print_failed
+WP_DB_USER_PASSWORD=$( echo "SELECT PASSWORD('${ENV_WORDPRESS_MYSQL_USR_PWD}');"|mysql -u root|grep '*' )
+PMA_DB_USER_PASSWORD=$( echo "SELECT PASSWORD('${ENV_PHPMYADMIN_MYSQL_USR_PWD}');"|mysql -u root|grep '*' )
+echo -e "$ENV_WORDPRESS_MYSQL_USR_PWD hasshed = $WP_DB_USER_PASSWORD"
+echo test
 
 
 echo -e "CREATE DB [${CYAN}${WP_DB_NAME}${NC}]"
@@ -48,21 +49,19 @@ echo "CREATE DATABASE ${WP_DB_NAME};" |mysql -u root && print_success || print_f
 echo -e "CREATE DB [${CYAN}${PMA_DB_NAME}${NC}]"
 echo "CREATE DATABASE ${PMA_DB_NAME};" |mysql -u root && print_success || print_failed
 
-echo -e "CREATE USER [${CYAN}${WP_DB_USER}${NC}] WITH HASHED PASSWORD [${CYAN}${WP_DB_USER_PASSWORD_HASHED}${NC}]"
-echo "CREATE USER '${WP_DB_USER}'@'${DB_HOST}' IDENTIFIED BY PASSWORD '${WP_DB_USER_PASSWORD_HASHED}';" | mysql -u root && print_success || print_failed
-echo -e "CREATE USER [${CYAN}${PMA_DB_USER}${NC}] WITH HASHED PASSWORD [${CYAN}${PMA_DB_USER_PASSWORD_HASHED}${NC}]"
-echo "CREATE USER '${PMA_DB_USER}'@'${DB_HOST}' IDENTIFIED BY PASSWORD '${PMA_DB_USER_PASSWORD_HASHED}';" | mysql -u root && print_success || print_failed
+echo -e "CREATE USER [${CYAN}${WP_DB_USER}${NC}]WITH HASHED PASSWORD [${CYAN}${WP_DB_USER_PASSWORD}${NC}]"
+echo "CREATE USER '${WP_DB_USER}'@'${DB_HOST}' IDENTIFIED BY PASSWORD '${WP_DB_USER_PASSWORD}';" | mysql -u root && print_success || print_failed
 
-#echo -e "GRANT ALL PRIVILEGES TO [${CYAN}${WP_DB_USER}${NC}] ON [${CYAN}${WP_DB_NAME}${NC}] FOR [${CYAN}${DB_HOST}${NC}]"
-#echo "GRANT ALL ON ${WP_DB_NAME}.* TO '${WP_DB_USER}'@'${DB_HOST}'  WITH GRANT OPTION;"|mysql -u root && print_success || print_failed
+echo -e "CREATE USER [${CYAN}${PMA_DB_USER}${NC}]WITH HASHED PASSWORD [${CYAN}${PMA_DB_USER_PASSWORD}${NC}]"
+echo "CREATE USER '${PMA_DB_USER}'@'${DB_HOST}' IDENTIFIED BY PASSWORD '${PMA_DB_USER_PASSWORD}';" | mysql -u root && print_success || print_failed
 
-echo -e "GRANT ALL PRIVILEGES TO [${CYAN}${WP_DB_USER}${NC}] ON [${CYAN}${WP_DB_NAME}${NC}] FOR [${CYAN}${WP_HOST}${NC}]"
-echo "GRANT ALL ON ${WP_DB_NAME}.* TO '${WP_DB_USER}'@'${WP_HOST}' IDENTIFIED BY PASSWORD '${WP_DB_USER_PASSWORD_HASHED}' WITH GRANT OPTION;"|mysql -u root && print_success || print_failed
-echo -e "GRANT ALL PRIVILEGES TO [${CYAN}${PMA_DB_USER}${NC}] ON [${CYAN}${WP_DB_NAME}${NC}] FOR [${CYAN}${PMA_HOST}${NC}]"
-echo "GRANT ALL ON ${WP_DB_NAME}.* TO '${PMA_DB_USER}'@'${PMA_HOST}' IDENTIFIED BY PASSWORD '${PMA_DB_USER_PASSWORD_HASHED}' WITH GRANT OPTION;"|mysql -u root && print_success || print_failed
+echo -e "GRANT ALL PRIVILEGES TO [${CYAN}${WP_DB_USER}${NC}] ON [${CYAN}${WP_DB_NAME}${NC}] FOR [${CYAN}%${NC}]"
+echo "GRANT ALL ON ${WP_DB_NAME}.* TO '${WP_DB_USER}'@'%' IDENTIFIED BY PASSWORD '${WP_DB_USER_PASSWORD}' WITH GRANT OPTION;"|mysql -u root && print_success || print_failed
+echo -e "GRANT ALL PRIVILEGES TO [${CYAN}${PMA_DB_USER}${NC}] ON [${CYAN}${WP_DB_NAME}${NC}] FOR [${CYAN}%${NC}]"
+echo "GRANT ALL ON ${WP_DB_NAME}.* TO '${PMA_DB_USER}'@'%' IDENTIFIED BY PASSWORD '${PMA_DB_USER_PASSWORD}' WITH GRANT OPTION;"|mysql -u root && print_success || print_failed
 
-echo -e "GRANT ALL PRIVILEGES TO [${CYAN}${PMA_DB_USER}${NC}] ON [${CYAN}${PMA_DB_NAME}${NC}] FOR [${CYAN}${PMA_HOST}${NC}]"
-echo "GRANT ALL ON ${PMA_DB_NAME}.* TO '${PMA_DB_USER}'@'${PMA_HOST}' IDENTIFIED BY PASSWORD '${PMA_DB_USER_PASSWORD_HASHED}' WITH GRANT OPTION;"|mysql -u root && print_success || print_failed
+echo -e "GRANT ALL PRIVILEGES TO [${CYAN}${PMA_DB_USER}${NC}] ON [${CYAN}${PMA_DB_NAME}${NC}] FOR [${CYAN}%${NC}]"
+echo "GRANT ALL ON ${PMA_DB_NAME}.* TO '${PMA_DB_USER}'@'%' IDENTIFIED BY PASSWORD '${PMA_DB_USER_PASSWORD}' WITH GRANT OPTION;"|mysql -u root && print_success || print_failed
 
 echo -e "FLUSH PRIVILEGES"
 echo "FLUSH PRIVILEGES;"|mysql -u root && print_success || print_failed

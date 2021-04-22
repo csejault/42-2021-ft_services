@@ -6,8 +6,7 @@ matadata->namespace: mynamespace
 
 
 
-procedure lancement 
-
+procedure lancement avec docker
 mysql
 pma
 wordpress
@@ -17,3 +16,7 @@ config wp
 config pma
 
 export wp conf et wp.sql
+
+
+
+:

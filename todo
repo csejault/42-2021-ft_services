@@ -1,1 +1,8 @@
 automate create table pma
+
+ssl sur nginx
+ssl sur pma
+ssl sur wp
+
+single ip
+redirect sur pma

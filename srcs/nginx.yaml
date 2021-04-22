@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
+        env:
+        - name: ENV_WORDPRESS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: ftservices-configmap
+              key: wordpress_host
+        - name: ENV_PHPMYADMIN_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: ftservices-configmap
+              key: phpmyadmin_host
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer

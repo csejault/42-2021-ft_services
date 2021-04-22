@@ -4,10 +4,10 @@
  *
  * Ce fichier est utilisé par le script de création de wp-config.php pendant
  * le processus d’installation. Vous n’avez pas à utiliser le site web, vous
- * pouvez simplement renommer ce fichier en « wp-config.php » et remplir les
+ * pouvez simplement renommer ce fichier en « wp-config.php » et remplir les
  * valeurs.
  *
- * Ce fichier contient les réglages de configuration suivants :
+ * Ce fichier contient les réglages de configuration suivants :
  *
  * Réglages MySQL
  * Préfixe de table
@@ -53,14 +53,14 @@ define( 'DB_COLLATE', '' );
  *
  * @since 2.6.0
  */
-define( 'AUTH_KEY',         'O74[+d=Mgv?~<9RV.8k<468migC48XVW5;KAK:}yb[1=5xdrM,KTt{68[@Gi-1C>' );
-define( 'SECURE_AUTH_KEY',  ':tEhi68{n5> BY^u5o%coU06YRujqmhaB>rd6Av!D/B/,Zd%F<Zh*SpwgbhzJar$' );
-define( 'LOGGED_IN_KEY',    'Z2H% IL~N//{LeSFxAh=W`4r!t(LI83YHm3wroBlq5Zp2WuM^6!IYk@AbXo`p]T;' );
-define( 'NONCE_KEY',        '[PP33xXKr}jaV(g$ Y_@.c_yNM-03}ek!QN:az,)/PDJK=%WFA{(P3|]T$Kz)!;V' );
-define( 'AUTH_SALT',        'uj!ZtpCv4qmjRkwB!lVI#&N0GcJy?Kx+POfi?X>zB0|$9r4`yT0h-Dn$?^A{ +}(' );
-define( 'SECURE_AUTH_SALT', '*H9>KZZ|c^Z,,b?Yebmz4ye6u3=H(L|ouK3XX/]p{ZGei3>?zir>GFpKeS95Xr[v' );
-define( 'LOGGED_IN_SALT',   '+=@i=L`4N*@P/er{DL}v~knYZ7_d@N((%S,l9<9lqQm(>Bh@L1{t(UP3Coib-HL!' );
-define( 'NONCE_SALT',       'e|)cu5kGpJw^VF#bsfA%LIu6NR+&ahODFwEg=otd!*J$Pa:>-aQ]2W ] s`^TM&x' );
+define( 'AUTH_KEY',         'y[^t~An>XH5tgFo:L2_Xuer:c^B4*eoK,TB~;%u6-[^X#~m/f@8,>faq:IOO3_Gh' );
+define( 'SECURE_AUTH_KEY',  'Nl(&UG}m7:wYY4~:CWGjv,?xo% @o 9U=FQoHD`<FI<N#8PE<w;>&D-~mEvg>am}' );
+define( 'LOGGED_IN_KEY',    'Zj)>xa%:[:SyHlx1`>neRAP1lZ%zYWCv]325g[& 4,eneeJ[:t?X6J5r)=3ORE][' );
+define( 'NONCE_KEY',        '*<x-;nK-.S&]@F&.Z;AEyK`$Q$rmZy OuJ!u]J_m/swbMRanfN,gH`/&R3g#g].7' );
+define( 'AUTH_SALT',        'ACJ|la9CGR}+JF+.b&UGD9u~;0lPrYeG5kZ$`xaI_vw{Fl2vvC>Cza%rdt%w:h1:' );
+define( 'SECURE_AUTH_SALT', '3UO`Ar+putUFW,16*[P%htFf1tTWe&Wi+UbwY@DR,=D3|O->6Qiw^Zx_V iQr(CK' );
+define( 'LOGGED_IN_SALT',   'dr;-K|pQU c53(!},um!xx3Fx[uA}[$#$ygn#kbe.{Qx^1)PH>Ryt)}KpXLkz!@D' );
+define( 'NONCE_SALT',       '#kJ/St0*&y^XfxC**@<-Ec,5v>sAjtf072T((GU17j61kk7kQ!Jm{52D%+FfG7m%' );
 /**#@-*/
 
 /**
@@ -68,7 +68,7 @@ define( 'NONCE_SALT',       'e|)cu5kGpJw^VF#bsfA%LIu6NR+&ahODFwEg=otd!*J$Pa:>-aQ
  *
  * Vous pouvez installer plusieurs WordPress sur une seule base de données
  * si vous leur donnez chacune un préfixe unique.
- * N’utilisez que des chiffres, des lettres non-accentuées, et des caractères soulignés !
+ * N’utilisez que des chiffres, des lettres non-accentuées, et des caractères soulignés !
  */
 $table_prefix = 'wp_';
 
@@ -96,4 +96,3 @@ if ( ! defined( 'ABSPATH' ) )
 
 /** Réglage des variables de WordPress et de ses fichiers inclus. */
 require_once( ABSPATH . 'wp-settings.php' );
-

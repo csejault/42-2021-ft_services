@@ -6,7 +6,7 @@
 #    By: csejault <csejault@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/04/15 17:47:31 by csejault          #+#    #+#              #
-#    Updated: 2021/04/21 15:25:58 by csejault         ###   ########.fr        #
+#    Updated: 2021/04/22 16:53:56 by csejault         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,8 +24,6 @@ ENV			ENV_MYSQL_HOST="172.17.0.2"
 
 ADD			./srcs .
 
-
-
 RUN			apk update && apk add --no-cache \
 			openrc \
 			php7\
@@ -38,10 +36,10 @@ RUN			apk update && apk add --no-cache \
 			php7-zip\
 			php7-gd\
 			php7-openssl\
-			libxml2\
 			php7-xml\
 			php7-mysqli\
 			php7-iconv\
+			libxml2\
 			nginx \
 			&& chmod u+x ./entrypoint_phpmyadmin.sh \
 			&& mkdir -p -m 755 /run/nginx/ \

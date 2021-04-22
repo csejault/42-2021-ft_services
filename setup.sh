@@ -10,7 +10,7 @@
 #    Created: 2021/04/09 15:31:47 by csejault          #+#    #+#              #
 #    Updated: 2021/04/12 12:13:04 by csejault         ###   ########.fr        #
 #                                                                              #
-# **************************************************************************** #
+
 
 
 #Black        0;30     Dark Gray     1;30
@@ -71,6 +71,10 @@ f_check_args()
 		case "$arg" in
 			"--os="*)
 				v_os=$(echo $arg|sed 's/--os=//g')
+				;;
+			"kdr")
+				f_kube_deployment_reset $1 || print_failed
+				shift
 				;;
 			"--kube-reset")
 				f_kube_reset
@@ -136,9 +140,40 @@ f_kube_full_reset()
 	fi
 }
 
-f_kube_apply()
+
+f_kube_apply_metallb()
 {
-	kubectl apply -f srcs
+	kubectl apply -f srcs/metallb.yaml ||return 1
+	kubectl apply -f srcs/configmap_metallb.yaml||return 1
+	kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)" || return 1
+}
+
+f_kube_apply_kube_conf()
+{
+	minikube addons enable dashboard||return 1
+	minikube addons enable metrics-server||return 1
+	kubectl apply -f srcs/configmap.yaml ||return 1
+	kubectl apply -f srcs/secret.yaml ||return 1
+}
+
+f_kube_apply_deployment()
+{
+	kubectl apply -f srcs/mysql.yaml ||return 1
+	kubectl apply -f srcs/wordpress.yaml ||return 1
+	kubectl apply -f srcs/phpmyadmin.yaml ||return 1
+	kubectl apply -f srcs/nginx.yaml ||return 1
+}
+
+f_kube_deployment_reset()
+{
+	eval $(minikube -p minikube docker-env)
+	if [[ -n $( kubectl get all|grep deployment.apps |grep $1) ]]
+	then
+		kubectl delete $(kubectl get all|grep deployment.apps|grep $1|awk '{print $1}') || return 1
+	fi
+	f_docker_build $1 || return 1
+	kubectl apply -f "$v_path_setup/srcs/$(ls srcs|grep -e "$1.yaml")" || return 1
+	exit
 }
 
 f_check_kube_version()
@@ -190,9 +225,18 @@ f_docker_build()
 #f_check_kube_version
 if [[ $# -eq 0 ]]
 then
+	if [[ $( minikube status|grep host|awk '{print $2}' ) != "Running" ]]
+	then
+		echo "Starting minikube"
+		minikube start
+	fi
 	eval $(minikube -p minikube docker-env)
 	f_docker_build all || exit 1
-	f_kube_apply || exit 1
+		v_ip=$( minikube ip )
+		sed -i -E "s/      - *.*/      - $v_ip-$v_ip/g" srcs/configmap_metallb.yaml
+	f_kube_apply_metallb || return 1
+	f_kube_apply_kube_conf || return 1
+	f_kube_apply_deployment || return 1
 	exit 0
 fi
 f_check_args $@ || exit 1
