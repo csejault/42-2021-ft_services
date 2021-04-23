@@ -146,6 +146,8 @@ f_kube_apply_metallb()
 	kubectl apply -f srcs/metallb.yaml ||return 1
 	kubectl apply -f srcs/configmap_metallb.yaml||return 1
 	kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)" || return 1
+	print_success || return 1
+	return 0
 }
 
 f_kube_apply_kube_conf()
@@ -154,6 +156,8 @@ f_kube_apply_kube_conf()
 	minikube addons enable metrics-server||return 1
 	kubectl apply -f srcs/configmap.yaml ||return 1
 	kubectl apply -f srcs/secret.yaml ||return 1
+	print_success || return 1
+	return 0
 }
 
 f_kube_apply_deployment()
@@ -162,6 +166,8 @@ f_kube_apply_deployment()
 	kubectl apply -f srcs/wordpress.yaml ||return 1
 	kubectl apply -f srcs/phpmyadmin.yaml ||return 1
 	kubectl apply -f srcs/nginx.yaml ||return 1
+	print_success || return 1
+	return 0
 }
 
 f_kube_deployment_reset()
@@ -173,7 +179,6 @@ f_kube_deployment_reset()
 	fi
 	f_docker_build $1 || return 1
 	kubectl apply -f "$v_path_setup/srcs/$(ls srcs|grep -e "$1.yaml")" || return 1
-	exit
 }
 
 f_check_kube_version()
@@ -219,6 +224,7 @@ f_docker_build()
 	else
 		docker build -t $1 "$v_path_setup/srcs/$1" && print_success || print_failed
 	fi
+	return 0
 }
 
 
@@ -234,9 +240,11 @@ then
 	f_docker_build all || exit 1
 		v_ip=$( minikube ip )
 		sed -i -E "s/      - *.*/      - $v_ip-$v_ip/g" srcs/configmap_metallb.yaml
+		sed -i -E "s/  minikube_ip:*.*/  minikube_ip: $v_ip/g" srcs/configmap.yaml
 	f_kube_apply_metallb || return 1
 	f_kube_apply_kube_conf || return 1
 	f_kube_apply_deployment || return 1
+	echo -e "${GREEN}FT_SERVICES${NC}"; print_success
 	exit 0
 fi
 f_check_args $@ || exit 1

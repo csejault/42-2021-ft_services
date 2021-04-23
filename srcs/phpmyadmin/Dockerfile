@@ -6,7 +6,7 @@
 #    By: csejault <csejault@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/04/15 17:47:31 by csejault          #+#    #+#              #
-#    Updated: 2021/04/22 16:53:56 by csejault         ###   ########.fr        #
+#    Updated: 2021/04/23 15:05:03 by csejault         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -54,7 +54,10 @@ RUN			apk update && apk add --no-cache \
 			&& chown -R nginx:nginx /var/www/ \
 			&& mv phpmyadmin.conf /etc/nginx/conf.d/ \
 			&& rm /etc/nginx/conf.d/default.conf \
-			&& nginx -t
-RUN			openrc && touch /run/openrc/softlevel
+			&& mv phpmyadmin_cert.pem /etc/ssl/certs/ \
+			&& mv phpmyadmin_key.pem /etc/ssl/private/ \
+			&& nginx -t \
+			&& openrc \
+			&& touch /run/openrc/softlevel
 
 CMD			["./entrypoint_phpmyadmin.sh"]

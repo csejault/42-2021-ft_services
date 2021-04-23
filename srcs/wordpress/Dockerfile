@@ -6,7 +6,7 @@
 #    By: csejault <csejault@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/30 12:08:38 by csejault          #+#    #+#              #
-#    Updated: 2021/04/22 16:53:41 by csejault         ###   ########.fr        #
+#    Updated: 2021/04/23 15:05:18 by csejault         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -61,7 +61,10 @@ RUN			apk update && apk add --no-cache \
 			&& rm wordpress-5.7-fr_FR.tar.gz \
 			&& mv wp-config.php /var/www/wordpress/ \
 			&& chown -R nginx:nginx /var/www/ \
-			&& nginx -t 
-RUN			openrc && touch /run/openrc/softlevel
+			&& mv wordpress_cert.pem /etc/ssl/certs/ \
+			&& mv wordpress_key.pem /etc/ssl/private/ \
+			&& nginx -t \
+			&& openrc \
+			&& touch /run/openrc/softlevel
 
 			#&& echo "daemon off;" >> /etc/nginx/nginx.conf \

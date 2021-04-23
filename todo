@@ -1,8 +1,10 @@
 automate create table pma
 
-ssl sur nginx
-ssl sur pma
-ssl sur wp
+correct wp
+ftps
+statefulset
+telegraph
+influxdb
+reutrn 301 if wrong file?
 
-single ip
 redirect sur pma

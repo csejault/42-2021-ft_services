@@ -7,3 +7,4 @@ data:
   nginx_host: nginx-service
   wordpress_host: wordpress-service
   phpmyadmin_host: phpmyadmin-service
+  minikube_ip: 192.168.99.139

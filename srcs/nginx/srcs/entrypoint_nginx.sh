@@ -14,7 +14,9 @@ GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 NC='\033[0m' # No Color
 
-sed -i "s/ENV_WORDPRESS_HOST/$ENV_WORDPRESS_HOST/g" /etc/nginx/conf.d/csejault.conf
+#SSL GENERATION
+# openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj '/CN=nginx.csejault'
+sed -i "s/ENV_MINIKUBE_HOST/$ENV_MINIKUBE_HOST/g" /etc/nginx/conf.d/csejault.conf
 
 echo -e "${YELLOW}Starting background NGINX${NC}"
 nginx &
@@ -22,6 +24,7 @@ ps
 echo -en "${YELLOW}check localhost response${NC}"
 #sleep 1
 #wget http://127.0.0.1/ping 1&>/dev/null && echo -e " [${GREEN}SUCCESS${NC}]" || echo -e " [${RED}FAIL${NC}]"
+nginx -t
 echo -e "${GREEN} === SERVER STARTED === ${NC}"
 tail -f /var/log/nginx/access.log /var/log/nginx/error.log
 

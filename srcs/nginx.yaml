@@ -19,28 +19,32 @@ spec:
         image: nginx
         imagePullPolicy: Never
         ports:
-        - containerPort: 80
+        - name: http
+          containerPort: 80
+        - name: https
+          containerPort: 443
         env:
-        - name: ENV_WORDPRESS_HOST
+        - name: ENV_MINIKUBE_HOST
           valueFrom:
             configMapKeyRef:
               name: ftservices-configmap
-              key: wordpress_host
-        - name: ENV_PHPMYADMIN_HOST
-          valueFrom:
-            configMapKeyRef:
-              name: ftservices-configmap
-              key: phpmyadmin_host
+              key: minikube_ip
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: nginx-service
+  annotations:
+    metallb.universe.tf/allow-shared-ip: shared
 spec:
   selector:
     app: nginx
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 80
-      targetPort: 80
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 443
   type: LoadBalancer
