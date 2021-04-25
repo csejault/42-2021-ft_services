@@ -6,7 +6,7 @@
 #    By: csejault <csejault@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/30 12:08:38 by csejault          #+#    #+#              #
-#    Updated: 2021/04/22 16:20:25 by csejault         ###   ########.fr        #
+#    Updated: 2021/04/25 16:04:34 by csejault         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,6 +22,7 @@ WORKDIR		/root/
 EXPOSE		3306
 
 ENV			ENV_MYSQL_HOST="172.17.0.2"
+ENV			ENV_MINIKUBE_HOST="127.0.0.1"
 ENV			ENV_PHPMYADMIN_HOST="172.17.0.3"
 ENV			ENV_WORDPRESS_HOST="172.17.0.4"
 ENV			ENV_WORDPRESS_MYSQL_DB="wp_db"

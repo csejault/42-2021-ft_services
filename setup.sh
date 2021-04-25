@@ -44,12 +44,12 @@ v_path_dock_phpmyadmin="$v_path_setup/srcs/phpmyadmin"
 
 print_success()
 {
-	echo -e "\t[${GREEN}SUCCESS${NC}]" 
+	echo -e "[${GREEN}SUCCESS${NC}]" 
 }
 
 print_failed()
 {
-	echo -e "\t[${RED}FAILED${NC}] --> EXIT" 
+	echo -e "[${RED}FAILED${NC}] --> EXIT" 
 	exit 1
 }
 
@@ -163,8 +163,8 @@ f_kube_apply_kube_conf()
 f_kube_apply_deployment()
 {
 	kubectl apply -f srcs/mysql.yaml ||return 1
-	kubectl apply -f srcs/wordpress.yaml ||return 1
 	kubectl apply -f srcs/phpmyadmin.yaml ||return 1
+	kubectl apply -f srcs/wordpress.yaml ||return 1
 	kubectl apply -f srcs/nginx.yaml ||return 1
 	print_success || return 1
 	return 0
@@ -215,12 +215,12 @@ f_docker_build()
 		echo -e "${YELLOW}=== DOCKER_BUILD ===${NC}"
 		echo -e "${YELLOW}=== mysql ===${NC}"
 		docker build -t mysql $v_path_dock_mysql && print_success || print_failed
+		echo -e "${YELLOW}=== phpmyadmin ===${NC}"
+		docker build -t phpmyadmin $v_path_dock_phpmyadmin && print_success || print_failed
 		echo -e "${YELLOW}=== wordpress ===${NC}"
 		docker build -t wordpress $v_path_dock_wordpress && print_success || print_failed
 		echo -e "${YELLOW}=== nginx ===${NC}"
 		docker build -t nginx $v_path_dock_nginx && print_success || print_failed
-		echo -e "${YELLOW}=== phpmyadmin ===${NC}"
-		docker build -t phpmyadmin $v_path_dock_phpmyadmin && print_success || print_failed
 	else
 		docker build -t $1 "$v_path_setup/srcs/$1" && print_success || print_failed
 	fi
@@ -245,6 +245,7 @@ then
 	f_kube_apply_kube_conf || return 1
 	f_kube_apply_deployment || return 1
 	echo -e "${GREEN}FT_SERVICES${NC}"; print_success
+	minikube dashboard
 	exit 0
 fi
 f_check_args $@ || exit 1

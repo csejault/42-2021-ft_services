@@ -66,6 +66,8 @@ echo "GRANT ALL ON ${PMA_DB_NAME}.* TO '${PMA_DB_USER}'@'%' IDENTIFIED BY PASSWO
 echo -e "FLUSH PRIVILEGES"
 echo "FLUSH PRIVILEGES;"|mysql -u root && print_success || print_failed
 
+sed  -i -E "s+\(1\, \'siteurl\', \'https://[0-9]?[0-9]?[0-9]?\.[0-9]?[0-9]?[0-9]\.[0-9]?[0-9]?[0-9]\.[0-9]?[0-9]?[0-9]+(1, 'siteurl', 'https://$ENV_MINIKUBE_HOST+g" "./wp_db.sql"
+sed  -i -E "s+\(2\, \'home\', \'https://[0-9]?[0-9]?[0-9]?\.[0-9]?[0-9]?[0-9]\.[0-9]?[0-9]?[0-9]\.[0-9]?[0-9]?[0-9]+(2, 'home', 'https://$ENV_MINIKUBE_HOST+g" "./wp_db.sql"
 echo -e "IMPORT SQL DB ON [${CYAN}${WP_DB_NAME}${NC}]"
 mysql  wp_db -u root < ./wp_db.sql && print_success || print_failed
 echo -e "IMPORT SQL DB ON [${CYAN}${PMA_DB_NAME}${NC}]"

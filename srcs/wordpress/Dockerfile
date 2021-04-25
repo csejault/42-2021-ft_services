@@ -6,7 +6,7 @@
 #    By: csejault <csejault@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/30 12:08:38 by csejault          #+#    #+#              #
-#    Updated: 2021/04/23 15:05:18 by csejault         ###   ########.fr        #
+#    Updated: 2021/04/25 14:59:25 by csejault         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,6 +31,9 @@ ADD			./srcs .
 
 RUN			apk update && apk add --no-cache \
 			openrc \
+			nginx \
+			php7-session\
+			php7-ctype\
 			php7\
 			php7-common\
 			php7-json\
@@ -39,6 +42,7 @@ RUN			apk update && apk add --no-cache \
 			php7-mbstring\
 			php7-cgi\
 			php7-mysqli\
+			php7-mysqlnd\
 			php7-curl\
 			php7-dom\
 			php7-exif\
@@ -50,17 +54,16 @@ RUN			apk update && apk add --no-cache \
 			php7-iconv\
 			php7-simplexml\
 			php7-xmlreader \
-			nginx \
 			&& chmod u+x ./entrypoint_wordpress.sh \
 			&& mkdir -p -m 755 /run/nginx/ \
 			&& chown nginx:nginx /run/nginx \
-			&& mv wordpress.conf /etc/nginx/conf.d/ \
-			&& rm /etc/nginx/conf.d/default.conf \
 			&& mkdir -p /var/www \
 			&& tar xvz -f wordpress-5.7-fr_FR.tar.gz -C /var/www \
-			&& rm wordpress-5.7-fr_FR.tar.gz \
 			&& mv wp-config.php /var/www/wordpress/ \
 			&& chown -R nginx:nginx /var/www/ \
+			&& mv wordpress.conf /etc/nginx/conf.d/ \
+			&& rm /etc/nginx/conf.d/default.conf \
+			&& rm wordpress-5.7-fr_FR.tar.gz \
 			&& mv wordpress_cert.pem /etc/ssl/certs/ \
 			&& mv wordpress_key.pem /etc/ssl/private/ \
 			&& nginx -t \

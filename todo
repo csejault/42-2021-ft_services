@@ -1,6 +1,7 @@
 automate create table pma
 
-correct wp
+
+correct dashboard http to https (service anotaion https?
 ftps
 statefulset
 telegraph
