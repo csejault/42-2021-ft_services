@@ -38,9 +38,10 @@ v_kube_needed_version="1.19.0"
 v_mac_os="mac"
 v_path_setup="/sgoinfre/goinfre/Perso/csejault/ft_services"
 v_path_dock_mysql="$v_path_setup/srcs/mysql"
+v_path_dock_phpmyadmin="$v_path_setup/srcs/phpmyadmin"
 v_path_dock_wordpress="$v_path_setup/srcs/wordpress"
 v_path_dock_nginx="$v_path_setup/srcs/nginx"
-v_path_dock_phpmyadmin="$v_path_setup/srcs/phpmyadmin"
+v_path_dock_ftps="$v_path_setup/srcs/ftps"
 
 print_success()
 {
@@ -166,6 +167,7 @@ f_kube_apply_deployment()
 	kubectl apply -f srcs/phpmyadmin.yaml ||return 1
 	kubectl apply -f srcs/wordpress.yaml ||return 1
 	kubectl apply -f srcs/nginx.yaml ||return 1
+	kubectl apply -f srcs/ftps.yaml ||return 1
 	print_success || return 1
 	return 0
 }
@@ -221,6 +223,8 @@ f_docker_build()
 		docker build -t wordpress $v_path_dock_wordpress && print_success || print_failed
 		echo -e "${YELLOW}=== nginx ===${NC}"
 		docker build -t nginx $v_path_dock_nginx && print_success || print_failed
+		echo -e "${YELLOW}=== ftps ===${NC}"
+		docker build -t ftps $v_path_dock_ftps && print_success || print_failed
 	else
 		docker build -t $1 "$v_path_setup/srcs/$1" && print_success || print_failed
 	fi
@@ -231,11 +235,11 @@ f_docker_build()
 #f_check_kube_version
 if [[ $# -eq 0 ]]
 then
-	if [[ $( minikube status|grep host|awk '{print $2}' ) != "Running" ]]
-	then
+	#if [[ $( minikube status|grep host|awk '{print $2}' ) != "Running" ]]
+	#then
 		echo "Starting minikube"
-		minikube start
-	fi
+		minikube start --mount --mount-string="./srcs/data/:/data"
+	#fi
 	eval $(minikube -p minikube docker-env)
 	f_docker_build all || exit 1
 		v_ip=$( minikube ip )
