@@ -32,16 +32,17 @@ NC='\033[0m' # No Color
 #rm -rf $HOME/.brew && git clone --depth=1 https://github.com/Homebrew/brew $HOME/.brew && echo 'export PATH=$HOME/.brew/bin:$PATH' >> $HOME/.zshrc && source $HOME/.zshrc && brew update
 #brew install minikube
 
-v_goinfre_path="/goinfre/csejault"
-v_kube_mac="./minikube-darwin-amd64"
-v_kube_needed_version="1.19.0"
-v_mac_os="mac"
-v_path_setup="/sgoinfre/goinfre/Perso/csejault/ft_services"
-v_path_dock_mysql="$v_path_setup/srcs/mysql"
-v_path_dock_phpmyadmin="$v_path_setup/srcs/phpmyadmin"
-v_path_dock_wordpress="$v_path_setup/srcs/wordpress"
-v_path_dock_nginx="$v_path_setup/srcs/nginx"
-v_path_dock_ftps="$v_path_setup/srcs/ftps"
+v_os="debian"
+
+f_42mac()
+{
+	v_goinfre_path="/goinfre/csejault"
+	v_path_setup="/sgoinfre/goinfre/Perso/csejault/ft_services"
+}
+f_debian()
+{
+	v_path_setup="/home/csejault/42-2021-ft_services"
+}
 
 print_success()
 {
@@ -56,15 +57,15 @@ print_failed()
 
 f_check_args()
 {
-	#	if [[ $1 != "--os="* ]]
-	#	then
-	#		echo "need the os flag in first position"
-	#		return 1
-	#	else
-	#		v_os=$(echo $1|sed 's/--os=//g')
-	#		shift;
-	#		echo "OS = $v_os"
-	#	fi
+	if [[ $1 != "--os="* ]]
+	then
+		echo "need the os flag in first position"
+		return 1
+	else
+		v_os=$(echo $1|sed 's/--os=//g')
+		shift;
+		echo "OS = $v_os"
+	fi
 	while [[ $# > 0 ]] ;
 	do
 		arg="$1"
@@ -231,20 +232,35 @@ f_docker_build()
 	return 0
 }
 
-
-#f_check_kube_version
 if [[ $# -eq 0 ]]
 then
-	#if [[ $( minikube status|grep host|awk '{print $2}' ) != "Running" ]]
-	#then
+	case "$v_os" in
+		"42mac")
+			f_42mac
+			;;
+		"debian")
+			f_debian
+			;;
+		"42xubuntu")
+			f_42xubuntu
+			;;
+	esac
+	v_path_dock_mysql="$v_path_setup/srcs/mysql"
+	v_path_dock_phpmyadmin="$v_path_setup/srcs/phpmyadmin"
+	v_path_dock_wordpress="$v_path_setup/srcs/wordpress"
+	v_path_dock_nginx="$v_path_setup/srcs/nginx"
+	v_path_dock_ftps="$v_path_setup/srcs/ftps"
+
+	if [[ $( minikube status|grep host|awk '{print $2}' ) != "Running" ]]
+	then
 		echo "Starting minikube"
-		minikube start --mount --mount-string="./srcs/data/:/data"
-	#fi
+		minikube start
+	fi
 	eval $(minikube -p minikube docker-env)
 	f_docker_build all || exit 1
-		v_ip=$( minikube ip )
-		sed -i -E "s/      - *.*/      - $v_ip-$v_ip/g" srcs/configmap_metallb.yaml
-		sed -i -E "s/  minikube_ip:*.*/  minikube_ip: $v_ip/g" srcs/configmap.yaml
+	v_ip=$( minikube ip )
+	sed -i -E "s/      - *.*/      - $v_ip-$v_ip/g" srcs/configmap_metallb.yaml
+	sed -i -E "s/  minikube_ip:*.*/  minikube_ip: $v_ip/g" srcs/configmap.yaml
 	f_kube_apply_metallb || return 1
 	f_kube_apply_kube_conf || return 1
 	f_kube_apply_deployment || return 1
