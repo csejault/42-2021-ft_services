@@ -6,6 +6,14 @@ matadata->namespace: mynamespace
 
 
 
+livenessProbe:
+          exec:
+            command:
+            - sh
+            - script
+
+
+
 procedure lancement avec docker
 mysql
 pma

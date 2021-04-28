@@ -249,7 +249,7 @@ then
 	f_kube_apply_kube_conf || return 1
 	f_kube_apply_deployment || return 1
 	echo -e "${GREEN}FT_SERVICES${NC}"; print_success
-	minikube dashboard
+	#minikube dashboard
 	exit 0
 fi
 f_check_args $@ || exit 1

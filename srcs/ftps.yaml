@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: task-pv-claim-ftps
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 3Mi
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ftps-deployment
+  labels:
+    app: ftps
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ftps
+  template:
+    metadata:
+      labels:
+        app: ftps
+    spec:
+      volumes:
+      - name: ftps-storage
+        persistentVolumeClaim:
+          claimName: task-pv-claim-ftps
+      containers:
+      - name: ftps
+        image: ftps
+        imagePullPolicy: Never
+        volumeMounts:
+        - mountPath: "/home/ftp"
+          name: ftps-storage
+        ports:
+        - name: ftps
+          containerPort: 21
+        - name: ftps-pasv
+          containerPort: 50000
+        env:
+        - name: ENV_MINIKUBE_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: ftservices-configmap
+              key: minikube_ip
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ftps-service
+  annotations:
+    metallb.universe.tf/allow-shared-ip: shared
+spec:
+  selector:
+    app: ftps
+  ports:
+    - name: ftps
+      protocol: TCP
+      port: 21
+    - name: ftps-pasv
+      protocol: TCP
+      port: 50000
+      targetPort: 50000
+  type: LoadBalancer

@@ -10,6 +10,9 @@ EXPOSE		50000
 ADD			./srcs .
 
 ENV			ENV_MINIKUBE_HOST="10.11.10.22"
+ENV			ENV_FTPS_USR="ftp_user"
+ENV			ENV_FTPS_USR_PWD="password"
+
 RUN			apk update && apk add --no-cache \
 			openrc \
 			openssl \
@@ -19,9 +22,6 @@ RUN			apk update && apk add --no-cache \
 			&& mv vsftpd.conf /etc/vsftpd/ \
 			&& mv ftps_cert.pem /etc/ssl/certs/ftps_cert.pem \
 			&& mv ftps_key.pem /etc/ssl/private/ftps_key.pem \
-			&& adduser -h /home/test -s /sbin/nologin -D test \
-			&& passwd -d 'test' test \
-			&& echo "test">/etc/vsftpd.chroot_list \
 			&& chmod u+x entrypoint_ftps.sh
 
 CMD			["./entrypoint_ftps.sh"]
