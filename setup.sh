@@ -32,7 +32,7 @@ NC='\033[0m' # No Color
 #rm -rf $HOME/.brew && git clone --depth=1 https://github.com/Homebrew/brew $HOME/.brew && echo 'export PATH=$HOME/.brew/bin:$PATH' >> $HOME/.zshrc && source $HOME/.zshrc && brew update
 #brew install minikube
 
-v_os="debian"
+v_os="42mac"
 
 f_42mac()
 {
@@ -57,15 +57,16 @@ print_failed()
 
 f_check_args()
 {
-	if [[ $1 != "--os="* ]]
-	then
-		echo "need the os flag in first position"
-		return 1
-	else
-		v_os=$(echo $1|sed 's/--os=//g')
-		shift;
-		echo "OS = $v_os"
-	fi
+	#
+	#	if [[ $1 != "--os="* ]]
+	#	then
+	#		echo "need the os flag in first position"
+	#		return 1
+	#	else
+	#		v_os=$(echo $1|sed 's/--os=//g')
+	#		shift;
+	#		echo "OS = $v_os"
+	#	fi
 	while [[ $# > 0 ]] ;
 	do
 		arg="$1"
@@ -232,19 +233,19 @@ f_docker_build()
 	return 0
 }
 
+case "$v_os" in
+	"42mac")
+		f_42mac
+		;;
+	"debian")
+		f_debian
+		;;
+	"42xubuntu")
+		f_42xubuntu
+		;;
+esac
 if [[ $# -eq 0 ]]
 then
-	case "$v_os" in
-		"42mac")
-			f_42mac
-			;;
-		"debian")
-			f_debian
-			;;
-		"42xubuntu")
-			f_42xubuntu
-			;;
-	esac
 	v_path_dock_mysql="$v_path_setup/srcs/mysql"
 	v_path_dock_phpmyadmin="$v_path_setup/srcs/phpmyadmin"
 	v_path_dock_wordpress="$v_path_setup/srcs/wordpress"
