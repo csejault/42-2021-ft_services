@@ -6,13 +6,13 @@
 #    By: csejault <csejault@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/04/15 17:47:31 by csejault          #+#    #+#              #
-#    Updated: 2021/04/23 15:05:03 by csejault         ###   ########.fr        #
+#    Updated: 2021/05/11 12:36:34 by csejault         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 #https://docs.phpmyadmin.net/en/latest/require.html
 
-FROM		alpine:3.12
+FROM		alpine
 
 LABEL		maintainer="csejault"
 
@@ -20,12 +20,15 @@ WORKDIR		/root/
 
 EXPOSE 		5000/tcp
 
-ENV			ENV_MYSQL_HOST="172.17.0.2"
+ENV			ENV_TELEGRAF_INFLUXDB_NAME="telegraf_db" \
+			ENV_TELEGRAF_INFLUXDB_USR="telegraf_usr" \
+			ENV_TELEGRAF_INFLUXDB_USR_PWD="Le mdp de telegraf est ceci!" \
+			ENV_INFLUXDB_HOST="127.0.0.1" \
+			ENV_MYSQL_HOST="172.17.0.2"
 
 ADD			./srcs .
 
 RUN			apk update && apk add --no-cache \
-			openrc \
 			php7\
 			php7-common\
 			php7-fpm\
@@ -41,6 +44,8 @@ RUN			apk update && apk add --no-cache \
 			php7-iconv\
 			libxml2\
 			nginx \
+			telegraf \
+			&& mv telegraf.conf /etc/ \
 			&& chmod u+x ./entrypoint_phpmyadmin.sh \
 			&& mkdir -p -m 755 /run/nginx/ \
 			&& chown nginx:nginx /run/nginx \
@@ -56,8 +61,6 @@ RUN			apk update && apk add --no-cache \
 			&& rm /etc/nginx/conf.d/default.conf \
 			&& mv phpmyadmin_cert.pem /etc/ssl/certs/ \
 			&& mv phpmyadmin_key.pem /etc/ssl/private/ \
-			&& nginx -t \
-			&& openrc \
-			&& touch /run/openrc/softlevel
+			&& nginx -t
 
 CMD			["./entrypoint_phpmyadmin.sh"]

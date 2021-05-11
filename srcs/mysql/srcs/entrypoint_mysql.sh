@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #Black        0;30     Dark Gray     1;30
 #Red          0;31     Light Red     1;31
@@ -35,14 +35,29 @@ print_failed()
 	exit 1
 }
 
+echo -e "STARTING TELEFRAF"
+./telegraf.sh && print_success || print_failed
 echo -e "STARTING MYSQL"
-rc-service mariadb start
+(mariadbd-safe &) 1>/dev/null && print_success || print_failed
+for (( i=1;i<=20;i++ )) do
+	echo -e "${YELLOW}Wait for mysq do start --> $i/20${NC}"
+	mysqladmin status 2>/dev/null
+	if [[ 0 -eq $? ]]
+	then
+		print_success
+		break
+	fi
+	usleep 500000
+done
+if [[ i -eq 21 ]]
+then
+	print_failed
+fi
+
 #service mysql start>>/dev/null && print_success || print_failed
 WP_DB_USER_PASSWORD=$( echo "SELECT PASSWORD('${ENV_WORDPRESS_MYSQL_USR_PWD}');"|mysql -u root|grep '*' )
 PMA_DB_USER_PASSWORD=$( echo "SELECT PASSWORD('${ENV_PHPMYADMIN_MYSQL_USR_PWD}');"|mysql -u root|grep '*' )
 echo -e "$ENV_WORDPRESS_MYSQL_USR_PWD hasshed = $WP_DB_USER_PASSWORD"
-echo test
-
 
 echo -e "CREATE DB [${CYAN}${WP_DB_NAME}${NC}]"
 echo "CREATE DATABASE ${WP_DB_NAME};" |mysql -u root && print_success || print_failed
@@ -73,9 +88,9 @@ mysql  wp_db -u root < ./wp_db.sql && print_success || print_failed
 echo -e "IMPORT SQL DB ON [${CYAN}${PMA_DB_NAME}${NC}]"
 mysql phpmyadmin -u root < ./phpmyadmin.sql && print_success || print_failed
 
-rc-service mariadb stop
 ip a|grep inet
 #rc-service mariadb start
-mariadbd-safe
-
-exit 0
+echo -e "${GREEN}CONFIGURATION OK RESTARTING${NC}"
+mysqladmin shutdown && print_success || print_failed
+mariadbd-safe && print_success || print_failed
+exit 1

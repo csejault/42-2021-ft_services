@@ -227,6 +227,10 @@ f_docker_build()
 		docker build -t nginx $v_path_dock_nginx && print_success || print_failed
 		echo -e "${YELLOW}=== ftps ===${NC}"
 		docker build -t ftps $v_path_dock_ftps && print_success || print_failed
+		echo -e "${YELLOW}=== influxdb ===${NC}"
+		docker build -t influxdb $v_path_dock_influxdb && print_success || print_failed
+		echo -e "${YELLOW}=== grafana ===${NC}"
+		docker build -t grafana $v_path_dock_grafana && print_success || print_failed
 	else
 		docker build -t $1 "$v_path_setup/srcs/$1" && print_success || print_failed
 	fi
@@ -244,14 +248,16 @@ case "$v_os" in
 		f_42xubuntu
 		;;
 esac
+v_path_dock_mysql="$v_path_setup/srcs/mysql"
+v_path_dock_phpmyadmin="$v_path_setup/srcs/phpmyadmin"
+v_path_dock_wordpress="$v_path_setup/srcs/wordpress"
+v_path_dock_nginx="$v_path_setup/srcs/nginx"
+v_path_dock_ftps="$v_path_setup/srcs/ftps"
+v_path_dock_influxdb="$v_path_setup/srcs/influxdb"
+v_path_dock_grafana="$v_path_setup/srcs/grafana"
+
 if [[ $# -eq 0 ]]
 then
-	v_path_dock_mysql="$v_path_setup/srcs/mysql"
-	v_path_dock_phpmyadmin="$v_path_setup/srcs/phpmyadmin"
-	v_path_dock_wordpress="$v_path_setup/srcs/wordpress"
-	v_path_dock_nginx="$v_path_setup/srcs/nginx"
-	v_path_dock_ftps="$v_path_setup/srcs/ftps"
-
 	if [[ $( minikube status|grep host|awk '{print $2}' ) != "Running" ]]
 	then
 		echo "Starting minikube"

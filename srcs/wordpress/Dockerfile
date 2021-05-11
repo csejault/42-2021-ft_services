@@ -6,13 +6,13 @@
 #    By: csejault <csejault@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/30 12:08:38 by csejault          #+#    #+#              #
-#    Updated: 2021/04/25 14:59:25 by csejault         ###   ########.fr        #
+#    Updated: 2021/05/11 12:27:57 by csejault         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 #PhP EXTENSION NEEDED BY WORDPRESS :
 #https://make.wordpress.org/hosting/handbook/handbook/server-environment/
-FROM		alpine:3.12
+FROM		alpine
 
 LABEL		maintainer="csejault"
 
@@ -20,17 +20,20 @@ WORKDIR		/root/
 
 EXPOSE		5050/tcp
 
-ENV			ENV_MYSQL_HOST="172.17.0.2"
-ENV			ENV_WORDPRESS_MYSQL_DB="wp_db"
-ENV			ENV_WORDPRESS_MYSQL_USR="wp_adm"
-ENV			ENV_WORDPRESS_MYSQL_USR_PWD="Le mdp de mysql est ceci!"
+ENV			ENV_TELEGRAF_INFLUXDB_NAME="telegraf_db" \
+			ENV_TELEGRAF_INFLUXDB_USR="telegraf_usr" \
+			ENV_TELEGRAF_INFLUXDB_USR_PWD="Le mdp de telegraf est ceci!" \
+			ENV_INFLUXDB_HOST="127.0.0.1" \
+			ENV_MYSQL_HOST="172.17.0.2" \
+			ENV_WORDPRESS_MYSQL_DB="wp_db" \
+			ENV_WORDPRESS_MYSQL_USR="wp_adm" \
+			ENV_WORDPRESS_MYSQL_USR_PWD="Le mdp de mysql est ceci!"
 
 CMD			["./entrypoint_wordpress.sh"]
 
 ADD			./srcs .
 
 RUN			apk update && apk add --no-cache \
-			openrc \
 			nginx \
 			php7-session\
 			php7-ctype\
@@ -54,6 +57,8 @@ RUN			apk update && apk add --no-cache \
 			php7-iconv\
 			php7-simplexml\
 			php7-xmlreader \
+			telegraf \
+			&& mv telegraf.conf /etc/ \
 			&& chmod u+x ./entrypoint_wordpress.sh \
 			&& mkdir -p -m 755 /run/nginx/ \
 			&& chown nginx:nginx /run/nginx \
@@ -66,8 +71,7 @@ RUN			apk update && apk add --no-cache \
 			&& rm wordpress-5.7-fr_FR.tar.gz \
 			&& mv wordpress_cert.pem /etc/ssl/certs/ \
 			&& mv wordpress_key.pem /etc/ssl/private/ \
-			&& nginx -t \
-			&& openrc \
-			&& touch /run/openrc/softlevel
+			&& echo "daemon off;" >> /etc/nginx/nginx.conf \
+			&& nginx -t
 
 			#&& echo "daemon off;" >> /etc/nginx/nginx.conf \

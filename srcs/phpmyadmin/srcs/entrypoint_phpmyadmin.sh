@@ -14,14 +14,27 @@ GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 NC='\033[0m' # No Color
 
-ip a|grep inet
 
-sed -i "s/ENV_MYSQL_HOST/$ENV_MYSQL_HOST/g" /var/www/phpmyadmin/config.inc.php
+print_success()
+{
+	echo -e "[${GREEN}SUCCESS${NC}]" 
+}
 
-echo -e "${YELLOW}Starting background NGINX${NC}"
-rc-service php-fpm7 restart
-rc-service nginx restart
-ps
-echo -e "${GREEN} === SERVER STARTED === ${NC}"
-tail -f /var/log/nginx/access.log /var/log/nginx/error.log
-exit 0
+print_failed()
+{
+	echo -e "[${RED}FAILED${NC}] --> EXIT" 
+	exit 1
+}
+
+echo -e "${YELLOW}Applying conf with environement var${NC}"
+sed -i "s/ENV_MYSQL_HOST/$ENV_MYSQL_HOST/g" /var/www/phpmyadmin/config.inc.php && print_success || print_failed
+
+echo -e "${YELLOW}Server IP${NC}"
+ifconfig|grep inet|grep -v 127.0.0.1
+
+echo -e "${YELLOW}Starting background php${NC}"
+php-fpm7 && print_success || print_failed
+
+echo -e "${YELLOW}Starting nginx${NC}"
+nginx && print_success || print_failed
+

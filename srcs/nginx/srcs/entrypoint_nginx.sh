@@ -14,18 +14,22 @@ GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 NC='\033[0m' # No Color
 
+print_success()
+{
+	echo -e "[${GREEN}SUCCESS${NC}]" 
+}
+
+print_failed()
+{
+	echo -e "[${RED}FAILED${NC}] --> EXIT" 
+	exit 1
+}
+
 #SSL GENERATION
 # openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj '/CN=nginx.csejault'
+echo -e "${YELLOW}Starting Telegraf${NC}"
+./telegraf.sh && print_success || print_failed
 sed -i "s/ENV_MINIKUBE_HOST/$ENV_MINIKUBE_HOST/g" /etc/nginx/conf.d/csejault.conf
-
-echo -e "${YELLOW}Starting background NGINX${NC}"
-nginx &
-ps
-echo -en "${YELLOW}check localhost response${NC}"
-#sleep 1
-#wget http://127.0.0.1/ping 1&>/dev/null && echo -e " [${GREEN}SUCCESS${NC}]" || echo -e " [${RED}FAIL${NC}]"
-nginx -t
-echo -e "${GREEN} === SERVER STARTED === ${NC}"
-tail -f /var/log/nginx/access.log /var/log/nginx/error.log
-
+echo -e "${YELLOW}Starting NGINX${NC}"
+nginx -t && nginx && print_success || print_failed
 exit 0

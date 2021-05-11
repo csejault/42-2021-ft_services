@@ -20,7 +20,6 @@ TELEGRAF_DB_NAME="$ENV_TELEGRAF_INFLUXDB_NAME"
 TELEGRAF_DB_USER="$ENV_TELEGRAF_INFLUXDB_USR"
 TELEGRAF_DB_USER_PWD="$ENV_TELEGRAF_INFLUXDB_USR_PWD"
 
-#influx -execute "CREATE RETENTION POLICY "a_year" ON "influx_db_telegraf" DURATION 52w REPLICATION 1 DEFAULT"
 
 print_success()
 {
@@ -33,8 +32,9 @@ print_failed()
 	exit 1
 }
 
+
 echo -e "STARTING INFLUX"
-(influxd &) && print_success || print_failed
+influxd &
 
 sleep 1
 
@@ -46,4 +46,8 @@ echo -e "CREATE USER [${CYAN}${TELEGRAF_DB_USER}${NC}]WITH PASSWORD [${CYAN}${TE
 
 echo -e "GRANT ALL PRIVILEGES TO [${CYAN}${TELEGRAF_DB_USER}${NC}] ON [${CYAN}${TELEGRAF_DB_NAME}${NC}]"
 (influx -execute "GRANT ALL ON $TELEGRAF_DB_NAME TO $TELEGRAF_DB_USER") && print_success || print_failed
+
+influx -execute "CREATE RETENTION POLICY "a_year" ON "$TELEGRAF_DB_NAME" DURATION 52w REPLICATION 1 DEFAULT"
+kill -15 $(ps|grep -e influxd |grep -v grep|awk '{print $1}')
+influxd
 exit 0

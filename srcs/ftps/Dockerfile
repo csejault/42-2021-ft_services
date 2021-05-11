@@ -9,14 +9,20 @@ EXPOSE		50000
 
 ADD			./srcs .
 
-ENV			ENV_MINIKUBE_HOST="10.11.10.22"
-ENV			ENV_FTPS_USR="ftp_user"
-ENV			ENV_FTPS_USR_PWD="password"
+ENV			ENV_TELEGRAF_INFLUXDB_NAME="telegraf_db" \
+			ENV_TELEGRAF_INFLUXDB_USR="telegraf_usr" \
+			ENV_TELEGRAF_INFLUXDB_USR_PWD="Le mdp de telegraf est ceci!" \
+			ENV_INFLUXDB_HOST="127.0.0.1" \
+			ENV_MINIKUBE_HOST="10.11.10.22" \
+			ENV_FTPS_USR="ftp_user" \
+			ENV_FTPS_USR_PWD="password"
 
 RUN			apk update && apk add --no-cache \
 			openrc \
 			openssl \
 			vsftpd \
+			telegraf \
+			&& mv telegraf.conf /etc/ \
 			&& openrc \
 			&& touch /run/openrc/softlevel \
 			&& mv vsftpd.conf /etc/vsftpd/ \

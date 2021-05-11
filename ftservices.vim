@@ -2,6 +2,7 @@ let SessionLoad = 1
 if &cp | set nocp | endif
 let s:cpo_save=&cpo
 set cpo&vim
+inoremap <silent> <Plug>(-fzf-complete-finish) l
 inoremap <silent> <Plug>(fzf-maps-i) :call fzf#vim#maps('i', 0)
 inoremap <expr> <Plug>(fzf-complete-buffer-line) fzf#vim#complete#buffer_line()
 inoremap <expr> <Plug>(fzf-complete-line) fzf#vim#complete#line()
@@ -57,6 +58,10 @@ nmap gx <Plug>NetrwBrowseX
 nnoremap { ci{
 nnoremap } ci}
 nnoremap <SNR>91_: :=v:count ? v:count : ''
+nnoremap <Plug>(-fzf-vim-do) :execute g:__fzf_command
+nnoremap <Plug>(-fzf-/) /
+nnoremap <Plug>(-fzf-:) :
+nnoremap <silent> <Plug>(-fzf-complete-finish) a
 nmap <F1> :Stdheader
 vnoremap <silent> <Plug>NetrwBrowseXVis :call netrw#BrowseXVis()
 nnoremap <silent> <Plug>NetrwBrowseX :call netrw#BrowseX(netrw#GX(),netrw#CheckIfRemote(netrw#GX()))
@@ -104,7 +109,7 @@ set undofile
 set window=0
 let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
 let v:this_session=expand("<sfile>:p")
-let Taboo_tabs = "1	TXT\n3	FTSERVER\n4	MYSQL\n5	NGINX\n6	WORDPRESS\n7	PMA\n8	FTPS\n9	MAP-SECRET\n"
+let Taboo_tabs = "1	TXT\n2	MAP-SECRET\n4	FTSERVER\n5	MYSQL\n6	NGINX\n7	WORDPRESS\n8	PMA\n9	FTPS\n10	INFLUXDB\n11	GRAFANA\n"
 silent only
 cd /sgoinfre/goinfre/Perso/csejault/ft_services
 if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
@@ -125,18 +130,18 @@ badd +1 setup.sh
 badd +1 srcs/nginx/Dockerfile
 badd +1 srcs/nginx/srcs/csejault.conf
 badd +18 srcs/nginx/srcs/nginx_entrypoint.sh
-badd +1 srcs/nginx/srcs/entrypoint_nginx.sh
+badd +34 srcs/nginx/srcs/entrypoint_nginx.sh
 badd +1 srcs/pma/Dockerfile
 badd +1 srcs/pma/srcs/entrypoint_pma.sh
 badd +1 srcs/phpmyadmin/Dockerfile
 badd +1 notes
 badd +42 srcs/phpmyadmin/srcs/config.php
-badd +1 ../ft_server/srcs/config_files/config.inc.php
-badd +1 ../ft_server/Dockerfile
+badd +1 /sgoinfre/goinfre/Perso/csejault/ft_server/srcs/config_files/config.inc.php
+badd +1 /sgoinfre/goinfre/Perso/csejault/ft_server/Dockerfile
 badd +177 ~/.vimrc
 badd +1 srcs/phpmyadmin/srcs/entrypoint_pma.sh
 badd +1 srcs/phpmyadmin/srcs/config.inc.php
-badd +1 ../ft_server/srcs/scripts/init_mariadb.sh
+badd +1 /sgoinfre/goinfre/Perso/csejault/ft_server/srcs/scripts/init_mariadb.sh
 badd +1 srcs/phpmyadmin/srcs/phpmyadmin.conf
 badd +1 srcs/wordpress/srcs/entrypoint_wordpress.sh
 badd +1 srcs/wordpress/srcs/wordpress.conf
@@ -147,7 +152,7 @@ badd +1 srcs/phpmyadmin.yaml
 badd +1 todo
 badd +1 srcs/nginx/srcs/nginx.pem
 badd +1 srcs/nginx/srcs/nginx_key.pem
-badd +1 ../ft_server/srcs/config_files/nginx_phpmyadmin
+badd +1 /sgoinfre/goinfre/Perso/csejault/ft_server/srcs/config_files/nginx_phpmyadmin
 badd +1 srcs/configmap.yaml
 badd +30 srcs/phpmyadmin/srcs/phpmyadmin_cert.pem
 badd +52 srcs/phpmyadmin/srcs/phpmyadmin_key.pem
@@ -155,13 +160,21 @@ badd +52 srcs/wordpress/srcs/wordpress_key.pem
 badd +30 srcs/wordpress/srcs/wordpress_cert.pem
 badd +1 srcs/wordpress/srcs/wp-config.php
 badd +1 srcs/secret.yaml
-badd +1 srcs/pv.yaml
+badd +14 srcs/pv.yaml
 badd +1 srcs/ftps/Dockerfile
-badd +0 srcs/ftps/srcs/entrypoint_ftps.sh
-badd +0 srcs/ftps/srcs/vsftpd.conf
-badd +0 srcs/ftps.yaml
+badd +1 srcs/ftps/srcs/entrypoint_ftps.sh
+badd +1 srcs/ftps/srcs/vsftpd.conf
+badd +1 srcs/ftps.yaml
 badd +6 srcs/metallb.yaml
-badd +0 srcs/mysql.yaml
+badd +1 srcs/mysql.yaml
+badd +1 srcs/influxdb/Dockerfile
+badd +1 srcs/influxdb/srcs/entrypoint_infkuxdb.sh
+badd +113 srcs/influxdb/srcs/telegraf.conf
+badd +150 srcs/telegraf.conf
+badd +5 srcs/telegraf.sh
+badd +1 srcs/telegraf/telegraf.sh
+badd +1 srcs/telegraf/telegraf.conf
+badd +0 srcs/grafana/Dockerfile
 argglobal
 silent! argdel *
 $argadd srcs/mysql/Dockerfile
@@ -413,6 +426,253 @@ normal! 03|
 wincmd w
 exe 'vert 1resize ' . ((&columns * 182 + 182) / 364)
 exe 'vert 2resize ' . ((&columns * 181 + 182) / 364)
+tabedit srcs/secret.yaml
+set splitbelow splitright
+wincmd _ | wincmd |
+vsplit
+1wincmd h
+wincmd w
+set nosplitbelow
+set nosplitright
+wincmd t
+set winminheight=1 winheight=1 winminwidth=1 winwidth=1
+exe 'vert 1resize ' . ((&columns * 182 + 182) / 364)
+exe 'vert 2resize ' . ((&columns * 181 + 182) / 364)
+argglobal
+setlocal noautoindent
+setlocal backupcopy=
+setlocal nobinary
+setlocal nobreakindent
+setlocal breakindentopt=
+setlocal bufhidden=
+setlocal buflisted
+setlocal buftype=
+setlocal nocindent
+setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
+setlocal cinoptions=
+setlocal cinwords=if,else,while,do,for,switch
+set colorcolumn=80
+setlocal colorcolumn=80
+setlocal comments=:#
+setlocal commentstring=#\ %s
+setlocal complete=.,w,b,u,t,i
+setlocal completefunc=
+setlocal nocopyindent
+setlocal cryptmethod=
+setlocal nocursorbind
+setlocal nocursorcolumn
+setlocal nocursorline
+setlocal define=
+setlocal dictionary=
+setlocal nodiff
+setlocal equalprg=
+setlocal errorformat=
+setlocal expandtab
+if &filetype != 'yaml'
+setlocal filetype=yaml
+endif
+setlocal fixendofline
+setlocal foldcolumn=0
+setlocal foldenable
+setlocal foldexpr=0
+setlocal foldignore=#
+setlocal foldlevel=0
+set foldmarker={,}
+setlocal foldmarker={,}
+set foldmethod=marker
+setlocal foldmethod=marker
+setlocal foldminlines=1
+setlocal foldnestmax=20
+setlocal foldtext=foldtext()
+setlocal formatexpr=
+setlocal formatoptions=croql
+setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
+setlocal formatprg=
+setlocal grepprg=
+setlocal iminsert=0
+setlocal imsearch=-1
+setlocal include=
+setlocal includeexpr=
+setlocal indentexpr=GetYAMLIndent(v:lnum)
+setlocal indentkeys=!^F,o,O,0#,0},0],<:>,0-
+setlocal noinfercase
+setlocal iskeyword=@,48-57,_,192-255
+setlocal keywordprg=
+setlocal nolinebreak
+setlocal nolisp
+setlocal lispwords=
+setlocal nolist
+setlocal makeencoding=
+setlocal makeprg=
+setlocal matchpairs=(:),{:},[:]
+setlocal modeline
+setlocal modifiable
+setlocal nrformats=bin,octal,hex
+set number
+setlocal number
+setlocal numberwidth=4
+setlocal omnifunc=
+setlocal path=
+setlocal nopreserveindent
+setlocal nopreviewwindow
+setlocal quoteescape=\\
+setlocal noreadonly
+set relativenumber
+setlocal relativenumber
+setlocal noscrollbind
+setlocal shiftwidth=4
+setlocal noshortname
+setlocal signcolumn=auto
+setlocal nosmartindent
+setlocal softtabstop=0
+setlocal nospell
+setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
+setlocal spellfile=
+setlocal spelllang=en
+setlocal statusline=%{lightline#link()}%#LightlineLeft_active_0#%(\ %{lightline#mode()}\ %)%{(&paste)?\"|\":\"\"}%(\ %{&paste?\"PASTE\":\"\"}\ %)%#LightlineLeft_active_0_1#%#LightlineLeft_active_1#%(\ %R\ %)%{(&readonly)&&(1||(&modified||!&modifiable))?\"|\":\"\"}%(\ %t\ %)%{(&modified||!&modifiable)?\"|\":\"\"}%(\ %M\ %)%#LightlineLeft_active_1_2#%#LightlineMiddle_active#%=%#LightlineRight_active_2_3#%#LightlineRight_active_2#%(\ %{&ff}\ %)%{1||1?\"|\":\"\"}%(\ %{&fenc!=#\"\"?&fenc:&enc}\ %)%{1?\"|\":\"\"}%(\ %{&ft!=#\"\"?&ft:\"no\ ft\"}\ %)%#LightlineRight_active_1_2#%#LightlineRight_active_1#%(\ %3p%%\ %)%#LightlineRight_active_0_1#%#LightlineRight_active_0#%(\ %3l:%-2c\ %)
+setlocal suffixesadd=
+setlocal noswapfile
+setlocal synmaxcol=3000
+if &syntax != 'yaml'
+setlocal syntax=yaml
+endif
+setlocal tabstop=4
+setlocal tagcase=
+setlocal tags=
+setlocal textwidth=0
+setlocal thesaurus=
+setlocal undofile
+setlocal undolevels=-123456
+setlocal nowinfixheight
+setlocal nowinfixwidth
+setlocal wrap
+setlocal wrapmargin=0
+let s:l = 1 - ((0 * winheight(0) + 40) / 81)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+1
+normal! 0
+wincmd w
+argglobal
+if bufexists('srcs/configmap.yaml') | buffer srcs/configmap.yaml | else | edit srcs/configmap.yaml | endif
+setlocal noautoindent
+setlocal backupcopy=
+setlocal nobinary
+setlocal nobreakindent
+setlocal breakindentopt=
+setlocal bufhidden=
+setlocal buflisted
+setlocal buftype=
+setlocal nocindent
+setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
+setlocal cinoptions=
+setlocal cinwords=if,else,while,do,for,switch
+set colorcolumn=80
+setlocal colorcolumn=80
+setlocal comments=:#
+setlocal commentstring=#\ %s
+setlocal complete=.,w,b,u,t,i
+setlocal completefunc=
+setlocal nocopyindent
+setlocal cryptmethod=
+setlocal nocursorbind
+setlocal nocursorcolumn
+setlocal nocursorline
+setlocal define=
+setlocal dictionary=
+setlocal nodiff
+setlocal equalprg=
+setlocal errorformat=
+setlocal expandtab
+if &filetype != 'yaml'
+setlocal filetype=yaml
+endif
+setlocal fixendofline
+setlocal foldcolumn=0
+setlocal foldenable
+setlocal foldexpr=0
+setlocal foldignore=#
+setlocal foldlevel=0
+set foldmarker={,}
+setlocal foldmarker={,}
+set foldmethod=marker
+setlocal foldmethod=marker
+setlocal foldminlines=1
+setlocal foldnestmax=20
+setlocal foldtext=foldtext()
+setlocal formatexpr=
+setlocal formatoptions=croql
+setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
+setlocal formatprg=
+setlocal grepprg=
+setlocal iminsert=0
+setlocal imsearch=-1
+setlocal include=
+setlocal includeexpr=
+setlocal indentexpr=GetYAMLIndent(v:lnum)
+setlocal indentkeys=!^F,o,O,0#,0},0],<:>,0-
+setlocal noinfercase
+setlocal iskeyword=@,48-57,_,192-255
+setlocal keywordprg=
+setlocal nolinebreak
+setlocal nolisp
+setlocal lispwords=
+setlocal nolist
+setlocal makeencoding=
+setlocal makeprg=
+setlocal matchpairs=(:),{:},[:]
+setlocal modeline
+setlocal modifiable
+setlocal nrformats=bin,octal,hex
+set number
+setlocal number
+setlocal numberwidth=4
+setlocal omnifunc=
+setlocal path=
+setlocal nopreserveindent
+setlocal nopreviewwindow
+setlocal quoteescape=\\
+setlocal noreadonly
+set relativenumber
+setlocal relativenumber
+setlocal noscrollbind
+setlocal shiftwidth=4
+setlocal noshortname
+setlocal signcolumn=auto
+setlocal nosmartindent
+setlocal softtabstop=0
+setlocal nospell
+setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
+setlocal spellfile=
+setlocal spelllang=en
+setlocal statusline=%{lightline#link()}%#LightlineLeft_inactive_0#%(\ %t\ %)%#LightlineLeft_inactive_0_1#%#LightlineMiddle_inactive#%=%#LightlineRight_inactive_1_2#%#LightlineRight_inactive_1#%(\ %3p%%\ %)%#LightlineRight_inactive_0_1#%#LightlineRight_inactive_0#%(\ %3l:%-2c\ %)
+setlocal suffixesadd=
+setlocal noswapfile
+setlocal synmaxcol=3000
+if &syntax != 'yaml'
+setlocal syntax=yaml
+endif
+setlocal tabstop=4
+setlocal tagcase=
+setlocal tags=
+setlocal textwidth=0
+setlocal thesaurus=
+setlocal undofile
+setlocal undolevels=-123456
+setlocal nowinfixheight
+setlocal nowinfixwidth
+setlocal wrap
+setlocal wrapmargin=0
+let s:l = 9 - ((8 * winheight(0) + 40) / 81)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+9
+normal! 029|
+wincmd w
+exe 'vert 1resize ' . ((&columns * 182 + 182) / 364)
+exe 'vert 2resize ' . ((&columns * 181 + 182) / 364)
 tabedit setup.sh
 set splitbelow splitright
 set nosplitbelow
@@ -528,13 +788,13 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 252 - ((76 * winheight(0) + 40) / 81)
+let s:l = 252 - ((72 * winheight(0) + 40) / 81)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 252
 normal! 05|
-tabedit ../ft_server/Dockerfile
+tabedit /sgoinfre/goinfre/Perso/csejault/ft_server/Dockerfile
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
@@ -666,15 +926,15 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 33 - ((32 * winheight(0) + 40) / 81)
+let s:l = 49 - ((48 * winheight(0) + 40) / 81)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-33
+49
 normal! 08|
 wincmd w
 argglobal
-if bufexists('../ft_server/srcs/config_files/nginx_phpmyadmin') | buffer ../ft_server/srcs/config_files/nginx_phpmyadmin | else | edit ../ft_server/srcs/config_files/nginx_phpmyadmin | endif
+if bufexists('/sgoinfre/goinfre/Perso/csejault/ft_server/srcs/config_files/nginx_phpmyadmin') | buffer /sgoinfre/goinfre/Perso/csejault/ft_server/srcs/config_files/nginx_phpmyadmin | else | edit /sgoinfre/goinfre/Perso/csejault/ft_server/srcs/config_files/nginx_phpmyadmin | endif
 setlocal noautoindent
 setlocal backupcopy=
 setlocal nobinary
@@ -793,7 +1053,7 @@ normal! zt
 normal! 0
 wincmd w
 argglobal
-if bufexists('../ft_server/srcs/config_files/config.inc.php') | buffer ../ft_server/srcs/config_files/config.inc.php | else | edit ../ft_server/srcs/config_files/config.inc.php | endif
+if bufexists('/sgoinfre/goinfre/Perso/csejault/ft_server/srcs/config_files/config.inc.php') | buffer /sgoinfre/goinfre/Perso/csejault/ft_server/srcs/config_files/config.inc.php | else | edit /sgoinfre/goinfre/Perso/csejault/ft_server/srcs/config_files/config.inc.php | endif
 onoremap <buffer> <silent> [[ ?\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)?:nohls
 nnoremap <buffer> <silent> [[ ?\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)?:nohls
 onoremap <buffer> <silent> ]] /\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)/:nohls
@@ -914,7 +1174,7 @@ normal! zt
 normal! 0
 wincmd w
 argglobal
-if bufexists('../ft_server/srcs/scripts/init_mariadb.sh') | buffer ../ft_server/srcs/scripts/init_mariadb.sh | else | edit ../ft_server/srcs/scripts/init_mariadb.sh | endif
+if bufexists('/sgoinfre/goinfre/Perso/csejault/ft_server/srcs/scripts/init_mariadb.sh') | buffer /sgoinfre/goinfre/Perso/csejault/ft_server/srcs/scripts/init_mariadb.sh | else | edit /sgoinfre/goinfre/Perso/csejault/ft_server/srcs/scripts/init_mariadb.sh | endif
 setlocal noautoindent
 setlocal backupcopy=
 setlocal nobinary
@@ -1157,7 +1417,7 @@ setlocal nospell
 setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
 setlocal spellfile=
 setlocal spelllang=en
-setlocal statusline=%{lightline#link()}%#LightlineLeft_active_0#%(\ %{lightline#mode()}\ %)%{(&paste)?\"|\":\"\"}%(\ %{&paste?\"PASTE\":\"\"}\ %)%#LightlineLeft_active_0_1#%#LightlineLeft_active_1#%(\ %R\ %)%{(&readonly)&&(1||(&modified||!&modifiable))?\"|\":\"\"}%(\ %t\ %)%{(&modified||!&modifiable)?\"|\":\"\"}%(\ %M\ %)%#LightlineLeft_active_1_2#%#LightlineMiddle_active#%=%#LightlineRight_active_2_3#%#LightlineRight_active_2#%(\ %{&ff}\ %)%{1||1?\"|\":\"\"}%(\ %{&fenc!=#\"\"?&fenc:&enc}\ %)%{1?\"|\":\"\"}%(\ %{&ft!=#\"\"?&ft:\"no\ ft\"}\ %)%#LightlineRight_active_1_2#%#LightlineRight_active_1#%(\ %3p%%\ %)%#LightlineRight_active_0_1#%#LightlineRight_active_0#%(\ %3l:%-2c\ %)
+setlocal statusline=%{lightline#link()}%#LightlineLeft_inactive_0#%(\ %t\ %)%#LightlineLeft_inactive_0_1#%#LightlineMiddle_inactive#%=%#LightlineRight_inactive_1_2#%#LightlineRight_inactive_1#%(\ %3p%%\ %)%#LightlineRight_inactive_0_1#%#LightlineRight_inactive_0#%(\ %3l:%-2c\ %)
 setlocal suffixesadd=
 setlocal noswapfile
 setlocal synmaxcol=3000
@@ -1175,11 +1435,11 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 1 - ((0 * winheight(0) + 40) / 81)
+let s:l = 4 - ((3 * winheight(0) + 40) / 81)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
+4
 normal! 0
 wincmd w
 argglobal
@@ -1391,7 +1651,7 @@ setlocal nospell
 setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
 setlocal spellfile=
 setlocal spelllang=en
-setlocal statusline=%{lightline#link()}%#LightlineLeft_inactive_0#%(\ %t\ %)%#LightlineLeft_inactive_0_1#%#LightlineMiddle_inactive#%=%#LightlineRight_inactive_1_2#%#LightlineRight_inactive_1#%(\ %3p%%\ %)%#LightlineRight_inactive_0_1#%#LightlineRight_inactive_0#%(\ %3l:%-2c\ %)
+setlocal statusline=%{lightline#link()}%#LightlineLeft_active_0#%(\ %{lightline#mode()}\ %)%{(&paste)?\"|\":\"\"}%(\ %{&paste?\"PASTE\":\"\"}\ %)%#LightlineLeft_active_0_1#%#LightlineLeft_active_1#%(\ %R\ %)%{(&readonly)&&(1||(&modified||!&modifiable))?\"|\":\"\"}%(\ %t\ %)%{(&modified||!&modifiable)?\"|\":\"\"}%(\ %M\ %)%#LightlineLeft_active_1_2#%#LightlineMiddle_active#%=%#LightlineRight_active_2_3#%#LightlineRight_active_2#%(\ %{&ff}\ %)%{1||1?\"|\":\"\"}%(\ %{&fenc!=#\"\"?&fenc:&enc}\ %)%{1?\"|\":\"\"}%(\ %{&ft!=#\"\"?&ft:\"no\ ft\"}\ %)%#LightlineRight_active_1_2#%#LightlineRight_active_1#%(\ %3p%%\ %)%#LightlineRight_active_0_1#%#LightlineRight_active_0#%(\ %3l:%-2c\ %)
 setlocal suffixesadd=
 setlocal noswapfile
 setlocal synmaxcol=3000
@@ -1423,11 +1683,11 @@ normal! zo
 normal! zo
 61
 normal! zo
-let s:l = 55 - ((54 * winheight(0) + 40) / 81)
+let s:l = 76 - ((68 * winheight(0) + 40) / 81)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-55
+76
 normal! 0
 wincmd w
 exe 'vert 1resize ' . ((&columns * 121 + 182) / 364)
@@ -1547,7 +1807,7 @@ setlocal nospell
 setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
 setlocal spellfile=
 setlocal spelllang=en
-setlocal statusline=%{lightline#link()}%#LightlineLeft_active_0#%(\ %{lightline#mode()}\ %)%{(&paste)?\"|\":\"\"}%(\ %{&paste?\"PASTE\":\"\"}\ %)%#LightlineLeft_active_0_1#%#LightlineLeft_active_1#%(\ %R\ %)%{(&readonly)&&(1||(&modified||!&modifiable))?\"|\":\"\"}%(\ %t\ %)%{(&modified||!&modifiable)?\"|\":\"\"}%(\ %M\ %)%#LightlineLeft_active_1_2#%#LightlineMiddle_active#%=%#LightlineRight_active_2_3#%#LightlineRight_active_2#%(\ %{&ff}\ %)%{1||1?\"|\":\"\"}%(\ %{&fenc!=#\"\"?&fenc:&enc}\ %)%{1?\"|\":\"\"}%(\ %{&ft!=#\"\"?&ft:\"no\ ft\"}\ %)%#LightlineRight_active_1_2#%#LightlineRight_active_1#%(\ %3p%%\ %)%#LightlineRight_active_0_1#%#LightlineRight_active_0#%(\ %3l:%-2c\ %)
+setlocal statusline=%{lightline#link()}%#LightlineLeft_inactive_0#%(\ %t\ %)%#LightlineLeft_inactive_0_1#%#LightlineMiddle_inactive#%=%#LightlineRight_inactive_1_2#%#LightlineRight_inactive_1#%(\ %3p%%\ %)%#LightlineRight_inactive_0_1#%#LightlineRight_inactive_0#%(\ %3l:%-2c\ %)
 setlocal suffixesadd=
 setlocal noswapfile
 setlocal synmaxcol=3000
@@ -1565,11 +1825,11 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 8 - ((7 * winheight(0) + 20) / 40)
+let s:l = 51 - ((39 * winheight(0) + 20) / 40)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-8
+51
 normal! 013|
 wincmd w
 argglobal
@@ -1682,12 +1942,12 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 43 - ((27 * winheight(0) + 20) / 40)
+let s:l = 49 - ((34 * winheight(0) + 20) / 40)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-43
-normal! 049|
+49
+normal! 038|
 wincmd w
 argglobal
 if bufexists('srcs/nginx/srcs/entrypoint_nginx.sh') | buffer srcs/nginx/srcs/entrypoint_nginx.sh | else | edit srcs/nginx/srcs/entrypoint_nginx.sh | endif
@@ -1781,7 +2041,7 @@ setlocal nospell
 setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
 setlocal spellfile=
 setlocal spelllang=en
-setlocal statusline=%{lightline#link()}%#LightlineLeft_inactive_0#%(\ %t\ %)%#LightlineLeft_inactive_0_1#%#LightlineMiddle_inactive#%=%#LightlineRight_inactive_1_2#%#LightlineRight_inactive_1#%(\ %3p%%\ %)%#LightlineRight_inactive_0_1#%#LightlineRight_inactive_0#%(\ %3l:%-2c\ %)
+setlocal statusline=%{lightline#link()}%#LightlineLeft_active_0#%(\ %{lightline#mode()}\ %)%{(&paste)?\"|\":\"\"}%(\ %{&paste?\"PASTE\":\"\"}\ %)%#LightlineLeft_active_0_1#%#LightlineLeft_active_1#%(\ %R\ %)%{(&readonly)&&(1||(&modified||!&modifiable))?\"|\":\"\"}%(\ %t\ %)%{(&modified||!&modifiable)?\"|\":\"\"}%(\ %M\ %)%#LightlineLeft_active_1_2#%#LightlineMiddle_active#%=%#LightlineRight_active_2_3#%#LightlineRight_active_2#%(\ %{&ff}\ %)%{1||1?\"|\":\"\"}%(\ %{&fenc!=#\"\"?&fenc:&enc}\ %)%{1?\"|\":\"\"}%(\ %{&ft!=#\"\"?&ft:\"no\ ft\"}\ %)%#LightlineRight_active_1_2#%#LightlineRight_active_1#%(\ %3p%%\ %)%#LightlineRight_active_0_1#%#LightlineRight_active_0#%(\ %3l:%-2c\ %)
 setlocal suffixesadd=
 setlocal noswapfile
 setlocal synmaxcol=3000
@@ -1799,12 +2059,20 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 27 - ((26 * winheight(0) + 40) / 81)
+30
+normal! zo
+30
+normal! zo
+33
+normal! zo
+33
+normal! zo
+let s:l = 34 - ((33 * winheight(0) + 40) / 81)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-27
-normal! 08|
+34
+normal! 0
 wincmd w
 argglobal
 if bufexists('srcs/nginx/srcs/csejault.conf') | buffer srcs/nginx/srcs/csejault.conf | else | edit srcs/nginx/srcs/csejault.conf | endif
@@ -2070,11 +2338,11 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 8 - ((7 * winheight(0) + 20) / 40)
+let s:l = 13 - ((12 * winheight(0) + 20) / 40)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-8
+13
 normal! 013|
 wincmd w
 argglobal
@@ -2678,7 +2946,7 @@ setlocal nospell
 setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
 setlocal spellfile=
 setlocal spelllang=en
-setlocal statusline=%{lightline#link()}%#LightlineLeft_active_0#%(\ %{lightline#mode()}\ %)%{(&paste)?\"|\":\"\"}%(\ %{&paste?\"PASTE\":\"\"}\ %)%#LightlineLeft_active_0_1#%#LightlineLeft_active_1#%(\ %R\ %)%{(&readonly)&&(1||(&modified||!&modifiable))?\"|\":\"\"}%(\ %t\ %)%{(&modified||!&modifiable)?\"|\":\"\"}%(\ %M\ %)%#LightlineLeft_active_1_2#%#LightlineMiddle_active#%=%#LightlineRight_active_2_3#%#LightlineRight_active_2#%(\ %{&ff}\ %)%{1||1?\"|\":\"\"}%(\ %{&fenc!=#\"\"?&fenc:&enc}\ %)%{1?\"|\":\"\"}%(\ %{&ft!=#\"\"?&ft:\"no\ ft\"}\ %)%#LightlineRight_active_1_2#%#LightlineRight_active_1#%(\ %3p%%\ %)%#LightlineRight_active_0_1#%#LightlineRight_active_0#%(\ %3l:%-2c\ %)
+setlocal statusline=%{lightline#link()}%#LightlineLeft_inactive_0#%(\ %t\ %)%#LightlineLeft_inactive_0_1#%#LightlineMiddle_inactive#%=%#LightlineRight_inactive_1_2#%#LightlineRight_inactive_1#%(\ %3p%%\ %)%#LightlineRight_inactive_0_1#%#LightlineRight_inactive_0#%(\ %3l:%-2c\ %)
 setlocal suffixesadd=
 setlocal noswapfile
 setlocal synmaxcol=3000
@@ -2696,11 +2964,11 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 8 - ((7 * winheight(0) + 20) / 40)
+let s:l = 58 - ((39 * winheight(0) + 20) / 40)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-8
+58
 normal! 013|
 wincmd w
 argglobal
@@ -3035,7 +3303,7 @@ setlocal nospell
 setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
 setlocal spellfile=
 setlocal spelllang=en
-setlocal statusline=%{lightline#link()}%#LightlineLeft_inactive_0#%(\ %t\ %)%#LightlineLeft_inactive_0_1#%#LightlineMiddle_inactive#%=%#LightlineRight_inactive_1_2#%#LightlineRight_inactive_1#%(\ %3p%%\ %)%#LightlineRight_inactive_0_1#%#LightlineRight_inactive_0#%(\ %3l:%-2c\ %)
+setlocal statusline=%{lightline#link()}%#LightlineLeft_active_0#%(\ %{lightline#mode()}\ %)%{(&paste)?\"|\":\"\"}%(\ %{&paste?\"PASTE\":\"\"}\ %)%#LightlineLeft_active_0_1#%#LightlineLeft_active_1#%(\ %R\ %)%{(&readonly)&&(1||(&modified||!&modifiable))?\"|\":\"\"}%(\ %t\ %)%{(&modified||!&modifiable)?\"|\":\"\"}%(\ %M\ %)%#LightlineLeft_active_1_2#%#LightlineMiddle_active#%=%#LightlineRight_active_2_3#%#LightlineRight_active_2#%(\ %{&ff}\ %)%{1||1?\"|\":\"\"}%(\ %{&fenc!=#\"\"?&fenc:&enc}\ %)%{1?\"|\":\"\"}%(\ %{&ft!=#\"\"?&ft:\"no\ ft\"}\ %)%#LightlineRight_active_1_2#%#LightlineRight_active_1#%(\ %3p%%\ %)%#LightlineRight_active_0_1#%#LightlineRight_active_0#%(\ %3l:%-2c\ %)
 setlocal suffixesadd=
 setlocal noswapfile
 setlocal synmaxcol=3000
@@ -3053,11 +3321,11 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 6 - ((5 * winheight(0) + 40) / 81)
+let s:l = 29 - ((28 * winheight(0) + 40) / 81)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-6
+29
 normal! 0
 wincmd w
 argglobal
@@ -3316,12 +3584,12 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 8 - ((7 * winheight(0) + 20) / 40)
+let s:l = 9 - ((8 * winheight(0) + 20) / 40)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-8
-normal! 013|
+9
+normal! 0
 wincmd w
 argglobal
 if bufexists('srcs/ftps/Dockerfile') | buffer srcs/ftps/Dockerfile | else | edit srcs/ftps/Dockerfile | endif
@@ -3667,11 +3935,11 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 7 - ((6 * winheight(0) + 40) / 81)
+let s:l = 5 - ((4 * winheight(0) + 40) / 81)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-7
+5
 normal! 025|
 wincmd w
 exe '1resize ' . ((&lines * 40 + 42) / 84)
@@ -3680,7 +3948,375 @@ exe '2resize ' . ((&lines * 40 + 42) / 84)
 exe 'vert 2resize ' . ((&columns * 121 + 182) / 364)
 exe 'vert 3resize ' . ((&columns * 121 + 182) / 364)
 exe 'vert 4resize ' . ((&columns * 120 + 182) / 364)
-tabedit srcs/secret.yaml
+tabedit srcs/influxdb/Dockerfile
+set splitbelow splitright
+wincmd _ | wincmd |
+vsplit
+1wincmd h
+wincmd w
+set nosplitbelow
+set nosplitright
+wincmd t
+set winminheight=1 winheight=1 winminwidth=1 winwidth=1
+exe 'vert 1resize ' . ((&columns * 181 + 182) / 364)
+exe 'vert 2resize ' . ((&columns * 182 + 182) / 364)
+argglobal
+setlocal noautoindent
+setlocal backupcopy=
+setlocal nobinary
+setlocal nobreakindent
+setlocal breakindentopt=
+setlocal bufhidden=
+setlocal buflisted
+setlocal buftype=
+setlocal nocindent
+setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
+setlocal cinoptions=
+setlocal cinwords=if,else,while,do,for,switch
+set colorcolumn=80
+setlocal colorcolumn=80
+setlocal comments=s1:/*,mb:*,ex:*/,://,b:#,:%,:XCOMM,n:>,fb:-
+setlocal commentstring=#\ %s
+setlocal complete=.,w,b,u,t,i
+setlocal completefunc=
+setlocal nocopyindent
+setlocal cryptmethod=
+setlocal nocursorbind
+setlocal nocursorcolumn
+setlocal nocursorline
+setlocal define=
+setlocal dictionary=
+setlocal nodiff
+setlocal equalprg=
+setlocal errorformat=
+setlocal noexpandtab
+if &filetype != 'dockerfile'
+setlocal filetype=dockerfile
+endif
+setlocal fixendofline
+setlocal foldcolumn=0
+setlocal foldenable
+setlocal foldexpr=0
+setlocal foldignore=#
+setlocal foldlevel=0
+set foldmarker={,}
+setlocal foldmarker={,}
+set foldmethod=marker
+setlocal foldmethod=marker
+setlocal foldminlines=1
+setlocal foldnestmax=20
+setlocal foldtext=foldtext()
+setlocal formatexpr=
+setlocal formatoptions=tcq
+setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
+setlocal formatprg=
+setlocal grepprg=
+setlocal iminsert=0
+setlocal imsearch=-1
+setlocal include=
+setlocal includeexpr=
+setlocal indentexpr=
+setlocal indentkeys=0{,0},:,0#,!^F,o,O,e
+setlocal noinfercase
+setlocal iskeyword=@,48-57,_,192-255
+setlocal keywordprg=
+setlocal nolinebreak
+setlocal nolisp
+setlocal lispwords=
+setlocal nolist
+setlocal makeencoding=
+setlocal makeprg=
+setlocal matchpairs=(:),{:},[:]
+setlocal modeline
+setlocal modifiable
+setlocal nrformats=bin,octal,hex
+set number
+setlocal number
+setlocal numberwidth=4
+setlocal omnifunc=
+setlocal path=
+setlocal nopreserveindent
+setlocal nopreviewwindow
+setlocal quoteescape=\\
+setlocal noreadonly
+set relativenumber
+setlocal relativenumber
+setlocal noscrollbind
+setlocal shiftwidth=4
+setlocal noshortname
+setlocal signcolumn=auto
+setlocal smartindent
+setlocal softtabstop=0
+setlocal nospell
+setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
+setlocal spellfile=
+setlocal spelllang=en
+setlocal statusline=%{lightline#link()}%#LightlineLeft_active_0#%(\ %{lightline#mode()}\ %)%{(&paste)?\"|\":\"\"}%(\ %{&paste?\"PASTE\":\"\"}\ %)%#LightlineLeft_active_0_1#%#LightlineLeft_active_1#%(\ %R\ %)%{(&readonly)&&(1||(&modified||!&modifiable))?\"|\":\"\"}%(\ %t\ %)%{(&modified||!&modifiable)?\"|\":\"\"}%(\ %M\ %)%#LightlineLeft_active_1_2#%#LightlineMiddle_active#%=%#LightlineRight_active_2_3#%#LightlineRight_active_2#%(\ %{&ff}\ %)%{1||1?\"|\":\"\"}%(\ %{&fenc!=#\"\"?&fenc:&enc}\ %)%{1?\"|\":\"\"}%(\ %{&ft!=#\"\"?&ft:\"no\ ft\"}\ %)%#LightlineRight_active_1_2#%#LightlineRight_active_1#%(\ %3p%%\ %)%#LightlineRight_active_0_1#%#LightlineRight_active_0#%(\ %3l:%-2c\ %)
+setlocal suffixesadd=
+setlocal noswapfile
+setlocal synmaxcol=3000
+if &syntax != 'dockerfile'
+setlocal syntax=dockerfile
+endif
+setlocal tabstop=4
+setlocal tagcase=
+setlocal tags=
+setlocal textwidth=0
+setlocal thesaurus=
+setlocal undofile
+setlocal undolevels=-123456
+setlocal nowinfixheight
+setlocal nowinfixwidth
+setlocal wrap
+setlocal wrapmargin=0
+let s:l = 19 - ((18 * winheight(0) + 40) / 81)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+19
+normal! 016|
+wincmd w
+argglobal
+if bufexists('srcs/influxdb/srcs/entrypoint_infkuxdb.sh') | buffer srcs/influxdb/srcs/entrypoint_infkuxdb.sh | else | edit srcs/influxdb/srcs/entrypoint_infkuxdb.sh | endif
+setlocal noautoindent
+setlocal backupcopy=
+setlocal nobinary
+setlocal nobreakindent
+setlocal breakindentopt=
+setlocal bufhidden=
+setlocal buflisted
+setlocal buftype=
+setlocal nocindent
+setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
+setlocal cinoptions=
+setlocal cinwords=if,else,while,do,for,switch
+set colorcolumn=80
+setlocal colorcolumn=80
+setlocal comments=s1:/*,mb:*,ex:*/,://,b:#,:%,:XCOMM,n:>,fb:-
+setlocal commentstring=#%s
+setlocal complete=.,w,b,u,t,i
+setlocal completefunc=
+setlocal nocopyindent
+setlocal cryptmethod=
+setlocal nocursorbind
+setlocal nocursorcolumn
+setlocal nocursorline
+setlocal define=
+setlocal dictionary=
+setlocal nodiff
+setlocal equalprg=
+setlocal errorformat=
+setlocal noexpandtab
+if &filetype != 'sh'
+setlocal filetype=sh
+endif
+setlocal fixendofline
+setlocal foldcolumn=0
+setlocal foldenable
+setlocal foldexpr=0
+setlocal foldignore=#
+setlocal foldlevel=1
+set foldmarker={,}
+setlocal foldmarker={,}
+set foldmethod=marker
+setlocal foldmethod=marker
+setlocal foldminlines=1
+setlocal foldnestmax=20
+setlocal foldtext=foldtext()
+setlocal formatexpr=
+setlocal formatoptions=tcq
+setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
+setlocal formatprg=
+setlocal grepprg=
+setlocal iminsert=0
+setlocal imsearch=-1
+setlocal include=
+setlocal includeexpr=
+setlocal indentexpr=GetShIndent()
+setlocal indentkeys=0{,0},!^F,o,O,e,0=then,0=do,0=else,0=elif,0=fi,0=esac,0=done,0=end,),0=;;,0=;&,0=fin,0=fil,0=fip,0=fir,0=fix
+setlocal noinfercase
+setlocal iskeyword=@,48-57,_,192-255
+setlocal keywordprg=
+setlocal nolinebreak
+setlocal nolisp
+setlocal lispwords=
+setlocal nolist
+setlocal makeencoding=
+setlocal makeprg=
+setlocal matchpairs=(:),{:},[:]
+setlocal modeline
+setlocal modifiable
+setlocal nrformats=bin,octal,hex
+set number
+setlocal number
+setlocal numberwidth=4
+setlocal omnifunc=
+setlocal path=
+setlocal nopreserveindent
+setlocal nopreviewwindow
+setlocal quoteescape=\\
+setlocal noreadonly
+set relativenumber
+setlocal relativenumber
+setlocal noscrollbind
+setlocal shiftwidth=4
+setlocal noshortname
+setlocal signcolumn=auto
+setlocal nosmartindent
+setlocal softtabstop=0
+setlocal nospell
+setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
+setlocal spellfile=
+setlocal spelllang=en
+setlocal statusline=%{lightline#link()}%#LightlineLeft_inactive_0#%(\ %t\ %)%#LightlineLeft_inactive_0_1#%#LightlineMiddle_inactive#%=%#LightlineRight_inactive_1_2#%#LightlineRight_inactive_1#%(\ %3p%%\ %)%#LightlineRight_inactive_0_1#%#LightlineRight_inactive_0#%(\ %3l:%-2c\ %)
+setlocal suffixesadd=
+setlocal noswapfile
+setlocal synmaxcol=3000
+if &syntax != 'sh'
+setlocal syntax=sh
+endif
+setlocal tabstop=4
+setlocal tagcase=
+setlocal tags=
+setlocal textwidth=0
+setlocal thesaurus=
+setlocal undofile
+setlocal undolevels=-123456
+setlocal nowinfixheight
+setlocal nowinfixwidth
+setlocal wrap
+setlocal wrapmargin=0
+let s:l = 50 - ((49 * winheight(0) + 40) / 81)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+50
+normal! 0
+wincmd w
+exe 'vert 1resize ' . ((&columns * 181 + 182) / 364)
+exe 'vert 2resize ' . ((&columns * 182 + 182) / 364)
+tabedit srcs/grafana/Dockerfile
+set splitbelow splitright
+set nosplitbelow
+set nosplitright
+wincmd t
+set winminheight=1 winheight=1 winminwidth=1 winwidth=1
+argglobal
+setlocal noautoindent
+setlocal backupcopy=
+setlocal nobinary
+setlocal nobreakindent
+setlocal breakindentopt=
+setlocal bufhidden=
+setlocal buflisted
+setlocal buftype=
+setlocal nocindent
+setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
+setlocal cinoptions=
+setlocal cinwords=if,else,while,do,for,switch
+set colorcolumn=80
+setlocal colorcolumn=80
+setlocal comments=s1:/*,mb:*,ex:*/,://,b:#,:%,:XCOMM,n:>,fb:-
+setlocal commentstring=#\ %s
+setlocal complete=.,w,b,u,t,i
+setlocal completefunc=
+setlocal nocopyindent
+setlocal cryptmethod=
+setlocal nocursorbind
+setlocal nocursorcolumn
+setlocal nocursorline
+setlocal define=
+setlocal dictionary=
+setlocal nodiff
+setlocal equalprg=
+setlocal errorformat=
+setlocal noexpandtab
+if &filetype != 'dockerfile'
+setlocal filetype=dockerfile
+endif
+setlocal fixendofline
+setlocal foldcolumn=0
+setlocal foldenable
+setlocal foldexpr=0
+setlocal foldignore=#
+setlocal foldlevel=0
+set foldmarker={,}
+setlocal foldmarker={,}
+set foldmethod=marker
+setlocal foldmethod=marker
+setlocal foldminlines=1
+setlocal foldnestmax=20
+setlocal foldtext=foldtext()
+setlocal formatexpr=
+setlocal formatoptions=tcq
+setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
+setlocal formatprg=
+setlocal grepprg=
+setlocal iminsert=0
+setlocal imsearch=-1
+setlocal include=
+setlocal includeexpr=
+setlocal indentexpr=
+setlocal indentkeys=0{,0},:,0#,!^F,o,O,e
+setlocal noinfercase
+setlocal iskeyword=@,48-57,_,192-255
+setlocal keywordprg=
+setlocal nolinebreak
+setlocal nolisp
+setlocal lispwords=
+setlocal nolist
+setlocal makeencoding=
+setlocal makeprg=
+setlocal matchpairs=(:),{:},[:]
+setlocal modeline
+setlocal modifiable
+setlocal nrformats=bin,octal,hex
+set number
+setlocal number
+setlocal numberwidth=4
+setlocal omnifunc=
+setlocal path=
+setlocal nopreserveindent
+setlocal nopreviewwindow
+setlocal quoteescape=\\
+setlocal noreadonly
+set relativenumber
+setlocal relativenumber
+setlocal noscrollbind
+setlocal shiftwidth=4
+setlocal noshortname
+setlocal signcolumn=auto
+setlocal smartindent
+setlocal softtabstop=0
+setlocal nospell
+setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
+setlocal spellfile=
+setlocal spelllang=en
+setlocal statusline=%{lightline#link()}%#LightlineLeft_active_0#%(\ %{lightline#mode()}\ %)%{(&paste)?\"|\":\"\"}%(\ %{&paste?\"PASTE\":\"\"}\ %)%#LightlineLeft_active_0_1#%#LightlineLeft_active_1#%(\ %R\ %)%{(&readonly)&&(1||(&modified||!&modifiable))?\"|\":\"\"}%(\ %t\ %)%{(&modified||!&modifiable)?\"|\":\"\"}%(\ %M\ %)%#LightlineLeft_active_1_2#%#LightlineMiddle_active#%=%#LightlineRight_active_2_3#%#LightlineRight_active_2#%(\ %{&ff}\ %)%{1||1?\"|\":\"\"}%(\ %{&fenc!=#\"\"?&fenc:&enc}\ %)%{1?\"|\":\"\"}%(\ %{&ft!=#\"\"?&ft:\"no\ ft\"}\ %)%#LightlineRight_active_1_2#%#LightlineRight_active_1#%(\ %3p%%\ %)%#LightlineRight_active_0_1#%#LightlineRight_active_0#%(\ %3l:%-2c\ %)
+setlocal suffixesadd=
+setlocal noswapfile
+setlocal synmaxcol=3000
+if &syntax != 'dockerfile'
+setlocal syntax=dockerfile
+endif
+setlocal tabstop=4
+setlocal tagcase=
+setlocal tags=
+setlocal textwidth=0
+setlocal thesaurus=
+setlocal undofile
+setlocal undolevels=-123456
+setlocal nowinfixheight
+setlocal nowinfixwidth
+setlocal wrap
+setlocal wrapmargin=0
+let s:l = 1 - ((0 * winheight(0) + 40) / 81)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+1
+normal! 0
+tabedit srcs/telegraf/telegraf.conf
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
@@ -3721,9 +4357,9 @@ setlocal dictionary=
 setlocal nodiff
 setlocal equalprg=
 setlocal errorformat=
-setlocal expandtab
-if &filetype != 'yaml'
-setlocal filetype=yaml
+setlocal noexpandtab
+if &filetype != 'conf'
+setlocal filetype=conf
 endif
 setlocal fixendofline
 setlocal foldcolumn=0
@@ -3747,8 +4383,8 @@ setlocal iminsert=0
 setlocal imsearch=-1
 setlocal include=
 setlocal includeexpr=
-setlocal indentexpr=GetYAMLIndent(v:lnum)
-setlocal indentkeys=!^F,o,O,0#,0},0],<:>,0-
+setlocal indentexpr=
+setlocal indentkeys=0{,0},:,0#,!^F,o,O,e
 setlocal noinfercase
 setlocal iskeyword=@,48-57,_,192-255
 setlocal keywordprg=
@@ -3777,7 +4413,7 @@ setlocal noscrollbind
 setlocal shiftwidth=4
 setlocal noshortname
 setlocal signcolumn=auto
-setlocal nosmartindent
+setlocal smartindent
 setlocal softtabstop=0
 setlocal nospell
 setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
@@ -3787,8 +4423,8 @@ setlocal statusline=%{lightline#link()}%#LightlineLeft_active_0#%(\ %{lightline#
 setlocal suffixesadd=
 setlocal noswapfile
 setlocal synmaxcol=3000
-if &syntax != 'yaml'
-setlocal syntax=yaml
+if &syntax != 'conf'
+setlocal syntax=conf
 endif
 setlocal tabstop=4
 setlocal tagcase=
@@ -3801,15 +4437,15 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 1 - ((0 * winheight(0) + 40) / 81)
+let s:l = 93 - ((12 * winheight(0) + 40) / 81)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
-normal! 0
+93
+normal! 03|
 wincmd w
 argglobal
-if bufexists('srcs/configmap.yaml') | buffer srcs/configmap.yaml | else | edit srcs/configmap.yaml | endif
+if bufexists('srcs/telegraf/telegraf.sh') | buffer srcs/telegraf/telegraf.sh | else | edit srcs/telegraf/telegraf.sh | endif
 setlocal noautoindent
 setlocal backupcopy=
 setlocal nobinary
@@ -3824,8 +4460,8 @@ setlocal cinoptions=
 setlocal cinwords=if,else,while,do,for,switch
 set colorcolumn=80
 setlocal colorcolumn=80
-setlocal comments=:#
-setlocal commentstring=#\ %s
+setlocal comments=s1:/*,mb:*,ex:*/,://,b:#,:%,:XCOMM,n:>,fb:-
+setlocal commentstring=#%s
 setlocal complete=.,w,b,u,t,i
 setlocal completefunc=
 setlocal nocopyindent
@@ -3838,9 +4474,9 @@ setlocal dictionary=
 setlocal nodiff
 setlocal equalprg=
 setlocal errorformat=
-setlocal expandtab
-if &filetype != 'yaml'
-setlocal filetype=yaml
+setlocal noexpandtab
+if &filetype != 'sh'
+setlocal filetype=sh
 endif
 setlocal fixendofline
 setlocal foldcolumn=0
@@ -3856,7 +4492,7 @@ setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldtext=foldtext()
 setlocal formatexpr=
-setlocal formatoptions=croql
+setlocal formatoptions=tcq
 setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
 setlocal formatprg=
 setlocal grepprg=
@@ -3864,8 +4500,8 @@ setlocal iminsert=0
 setlocal imsearch=-1
 setlocal include=
 setlocal includeexpr=
-setlocal indentexpr=GetYAMLIndent(v:lnum)
-setlocal indentkeys=!^F,o,O,0#,0},0],<:>,0-
+setlocal indentexpr=GetShIndent()
+setlocal indentkeys=0{,0},!^F,o,O,e,0=then,0=do,0=else,0=elif,0=fi,0=esac,0=done,0=end,),0=;;,0=;&,0=fin,0=fil,0=fip,0=fir,0=fix
 setlocal noinfercase
 setlocal iskeyword=@,48-57,_,192-255
 setlocal keywordprg=
@@ -3904,8 +4540,8 @@ setlocal statusline=%{lightline#link()}%#LightlineLeft_inactive_0#%(\ %t\ %)%#Li
 setlocal suffixesadd=
 setlocal noswapfile
 setlocal synmaxcol=3000
-if &syntax != 'yaml'
-setlocal syntax=yaml
+if &syntax != 'sh'
+setlocal syntax=sh
 endif
 setlocal tabstop=4
 setlocal tagcase=
@@ -3918,137 +4554,16 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 9 - ((8 * winheight(0) + 40) / 81)
+let s:l = 7 - ((6 * winheight(0) + 40) / 81)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-9
-normal! 029|
+7
+normal! 046|
 wincmd w
 exe 'vert 1resize ' . ((&columns * 182 + 182) / 364)
 exe 'vert 2resize ' . ((&columns * 181 + 182) / 364)
-tabedit srcs/pv.yaml
-set splitbelow splitright
-set nosplitbelow
-set nosplitright
-wincmd t
-set winminheight=1 winheight=1 winminwidth=1 winwidth=1
-argglobal
-setlocal noautoindent
-setlocal backupcopy=
-setlocal nobinary
-setlocal nobreakindent
-setlocal breakindentopt=
-setlocal bufhidden=
-setlocal buflisted
-setlocal buftype=
-setlocal nocindent
-setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
-setlocal cinoptions=
-setlocal cinwords=if,else,while,do,for,switch
-set colorcolumn=80
-setlocal colorcolumn=80
-setlocal comments=:#
-setlocal commentstring=#\ %s
-setlocal complete=.,w,b,u,t,i
-setlocal completefunc=
-setlocal nocopyindent
-setlocal cryptmethod=
-setlocal nocursorbind
-setlocal nocursorcolumn
-setlocal nocursorline
-setlocal define=
-setlocal dictionary=
-setlocal nodiff
-setlocal equalprg=
-setlocal errorformat=
-setlocal expandtab
-if &filetype != 'yaml'
-setlocal filetype=yaml
-endif
-setlocal fixendofline
-setlocal foldcolumn=0
-setlocal foldenable
-setlocal foldexpr=0
-setlocal foldignore=#
-setlocal foldlevel=0
-set foldmarker={,}
-setlocal foldmarker={,}
-set foldmethod=marker
-setlocal foldmethod=marker
-setlocal foldminlines=1
-setlocal foldnestmax=20
-setlocal foldtext=foldtext()
-setlocal formatexpr=
-setlocal formatoptions=croql
-setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
-setlocal formatprg=
-setlocal grepprg=
-setlocal iminsert=0
-setlocal imsearch=-1
-setlocal include=
-setlocal includeexpr=
-setlocal indentexpr=GetYAMLIndent(v:lnum)
-setlocal indentkeys=!^F,o,O,0#,0},0],<:>,0-
-setlocal noinfercase
-setlocal iskeyword=@,48-57,_,192-255
-setlocal keywordprg=
-setlocal nolinebreak
-setlocal nolisp
-setlocal lispwords=
-setlocal nolist
-setlocal makeencoding=
-setlocal makeprg=
-setlocal matchpairs=(:),{:},[:]
-setlocal modeline
-setlocal modifiable
-setlocal nrformats=bin,octal,hex
-set number
-setlocal number
-setlocal numberwidth=4
-setlocal omnifunc=
-setlocal path=
-setlocal nopreserveindent
-setlocal nopreviewwindow
-setlocal quoteescape=\\
-setlocal noreadonly
-set relativenumber
-setlocal relativenumber
-setlocal noscrollbind
-setlocal shiftwidth=4
-setlocal noshortname
-setlocal signcolumn=auto
-setlocal nosmartindent
-setlocal softtabstop=0
-setlocal nospell
-setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
-setlocal spellfile=
-setlocal spelllang=en
-setlocal statusline=%{lightline#link()}%#LightlineLeft_active_0#%(\ %{lightline#mode()}\ %)%{(&paste)?\"|\":\"\"}%(\ %{&paste?\"PASTE\":\"\"}\ %)%#LightlineLeft_active_0_1#%#LightlineLeft_active_1#%(\ %R\ %)%{(&readonly)&&(1||(&modified||!&modifiable))?\"|\":\"\"}%(\ %t\ %)%{(&modified||!&modifiable)?\"|\":\"\"}%(\ %M\ %)%#LightlineLeft_active_1_2#%#LightlineMiddle_active#%=%#LightlineRight_active_2_3#%#LightlineRight_active_2#%(\ %{&ff}\ %)%{1||1?\"|\":\"\"}%(\ %{&fenc!=#\"\"?&fenc:&enc}\ %)%{1?\"|\":\"\"}%(\ %{&ft!=#\"\"?&ft:\"no\ ft\"}\ %)%#LightlineRight_active_1_2#%#LightlineRight_active_1#%(\ %3p%%\ %)%#LightlineRight_active_0_1#%#LightlineRight_active_0#%(\ %3l:%-2c\ %)
-setlocal suffixesadd=
-setlocal noswapfile
-setlocal synmaxcol=3000
-if &syntax != 'yaml'
-setlocal syntax=yaml
-endif
-setlocal tabstop=4
-setlocal tagcase=
-setlocal tags=
-setlocal textwidth=0
-setlocal thesaurus=
-setlocal undofile
-setlocal undolevels=-123456
-setlocal nowinfixheight
-setlocal nowinfixwidth
-setlocal wrap
-setlocal wrapmargin=0
-let s:l = 14 - ((13 * winheight(0) + 40) / 81)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-14
-normal! 05|
-tabnext 4
+tabnext 11
 set stal=1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
