@@ -26,6 +26,11 @@ print_failed()
 	exit 1
 }
 
+echo -e "${YELLOW}Starting Telegraf${NC}"
+#hostname="phpmyadmin-$(ifconfig|grep inet|grep -v 127.0.0.1|sed -E s/"inet addr:"//|sed -E s/B.*$//|awk '{print $1}')"
+hostname="phpmyadmin"
+sed -i "s/hostname = \"\"/hostname = \"${hostname}\"/g" /etc/telegraf.conf
+./telegraf.sh && print_success || print_failed
 echo -e "${YELLOW}Applying conf with environement var${NC}"
 sed -i "s/ENV_MYSQL_HOST/$ENV_MYSQL_HOST/g" /var/www/phpmyadmin/config.inc.php && print_success || print_failed
 

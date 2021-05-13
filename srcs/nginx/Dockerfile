@@ -6,7 +6,7 @@
 #    By: csejault <csejault@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/04/14 15:16:36 by csejault          #+#    #+#              #
-#    Updated: 2021/05/11 10:46:02 by csejault         ###   ########.fr        #
+#    Updated: 2021/05/13 16:35:22 by csejault         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,12 +25,11 @@ EXPOSE 		443/tcp
 ENV			ENV_TELEGRAF_INFLUXDB_NAME="telegraf_db" \
 			ENV_TELEGRAF_INFLUXDB_USR="telegraf_usr" \
 			ENV_TELEGRAF_INFLUXDB_USR_PWD="Le mdp de telegraf est ceci!" \
-			ENV_INFLUXDB_HOST="127.0.0.1" \
+			ENV_INFLUXDB_HOST="172.17.0.2" \
 			ENV_MINIKUBE_HOST="127.0.0.1" \
 			ENV_TELEGRAF_INFLUXDB_NAME="telegraf_db" \
 			ENV_TELEGRAF_INFLUXDB_USR="telegraf_usr" \
-			ENV_TELEGRAF_INFLUXDB_USR_PWD="Le mdp de telegraf est ceci!" \
-			ENV_INFLUXDB_HOST="127.0.0.1"
+			ENV_TELEGRAF_INFLUXDB_USR_PWD="Le mdp de telegraf est ceci!"
 
 CMD			["./entrypoint_nginx.sh"]
 

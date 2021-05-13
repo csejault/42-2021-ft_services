@@ -15,13 +15,13 @@ livenessProbe:
 
 
 procedure lancement avec docker
-2mysql
-3pma
-4wordpress
-5nginx
-6ftps
-7influxdb
-8grafana
+2influxdb
+3grafana
+4mysql
+5pma
+6wordpress
+7nginx
+8ftps
 
 config wp
 config pma

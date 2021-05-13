@@ -1,4 +1,4 @@
-#!/bin/bash
+
 
 # **************************************************************************** #
 #                                                                              #
@@ -78,6 +78,9 @@ f_check_args()
 			"kdr")
 				f_kube_deployment_reset $1 || print_failed
 				shift
+				;;
+			"dr")
+				f_docker_run_detach
 				;;
 			"--kube-reset")
 				f_kube_reset
@@ -235,6 +238,20 @@ f_docker_build()
 		docker build -t $1 "$v_path_setup/srcs/$1" && print_success || print_failed
 	fi
 	return 0
+}
+
+f_docker_run_detach()
+{
+	docker kill $(docker ps -q)
+	docker rm $(docker ps -a -q)
+	f_docker_build all
+	docker run -d --rm -p 8086:8086 influxdb
+	docker run -d --rm -p 3000:3000 grafana
+	docker run -d --rm -p 3306:3306 mysql
+	docker run -d --rm -p 5000:5000 phpmyadmin
+	docker run -d --rm -p 5050:5050 wordpress
+	docker run -d --rm -p 80:80 -p 443:443 nginx
+	docker run -d --rm -p 21:21 -p 50000:50000 ftps
 }
 
 case "$v_os" in

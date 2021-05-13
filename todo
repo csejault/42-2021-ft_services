@@ -2,10 +2,17 @@ automate create table pma
 
 
 correct dashboard http to https (service anotaion https?
-ftps
+correct phpmyadmin redirect
+
 statefulset
 telegraph
 influxdb
 reutrn 301 if wrong file?
 
-redirect sur pma
+
+TODO PHP
+/* User used to manipulate with storage */
+# $cfg['Servers'][$i]['controlhost'] = 'ENV_DB_HOST';
+# $cfg['Servers'][$i]['controlport'] = '3306';
+# $cfg['Servers'][$i]['controluser'] = 'pma';
+# $cfg['Servers'][$i]['controlpass'] = 'Le mdp de pma est ceci!';

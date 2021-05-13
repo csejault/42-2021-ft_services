@@ -6,7 +6,7 @@
 #    By: csejault <csejault@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/30 12:08:38 by csejault          #+#    #+#              #
-#    Updated: 2021/05/11 12:27:57 by csejault         ###   ########.fr        #
+#    Updated: 2021/05/11 15:10:50 by csejault         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,8 +23,8 @@ EXPOSE		5050/tcp
 ENV			ENV_TELEGRAF_INFLUXDB_NAME="telegraf_db" \
 			ENV_TELEGRAF_INFLUXDB_USR="telegraf_usr" \
 			ENV_TELEGRAF_INFLUXDB_USR_PWD="Le mdp de telegraf est ceci!" \
-			ENV_INFLUXDB_HOST="127.0.0.1" \
-			ENV_MYSQL_HOST="172.17.0.2" \
+			ENV_INFLUXDB_HOST="172.17.0.2" \
+			ENV_MYSQL_HOST="172.17.0.4" \
 			ENV_WORDPRESS_MYSQL_DB="wp_db" \
 			ENV_WORDPRESS_MYSQL_USR="wp_adm" \
 			ENV_WORDPRESS_MYSQL_USR_PWD="Le mdp de mysql est ceci!"

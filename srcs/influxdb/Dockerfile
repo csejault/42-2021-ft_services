@@ -6,7 +6,7 @@
 #    By: csejault <csejault@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/08 15:15:51 by csejault          #+#    #+#              #
-#    Updated: 2021/05/11 10:48:27 by csejault         ###   ########.fr        #
+#    Updated: 2021/05/11 14:32:16 by csejault         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,6 +29,7 @@ ADD			./srcs/ .
 
 RUN			apk update \
 			&& apk add --no-cache \
+			bash \
 			influxdb \
 			telegraf \
 			&& mv telegraf.conf /etc/

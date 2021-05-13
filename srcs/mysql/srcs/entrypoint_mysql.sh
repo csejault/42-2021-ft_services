@@ -35,12 +35,15 @@ print_failed()
 	exit 1
 }
 
+#hostname="mysql-$(ifconfig|grep inet|grep -v 127.0.0.1|sed -E s/"inet addr:"//|sed -E s/B.*$//|awk '{print $1}')"
+hostname="mysql"
+sed -i "s/hostname = \"\"/hostname = \"${hostname}\"/g" /etc/telegraf.conf
 echo -e "STARTING TELEFRAF"
 ./telegraf.sh && print_success || print_failed
 echo -e "STARTING MYSQL"
 (mariadbd-safe &) 1>/dev/null && print_success || print_failed
 for (( i=1;i<=20;i++ )) do
-	echo -e "${YELLOW}Wait for mysq do start --> $i/20${NC}"
+	echo -e "${YELLOW}Wait for mariadb do start --> $i/20${NC}"
 	mysqladmin status 2>/dev/null
 	if [[ 0 -eq $? ]]
 	then

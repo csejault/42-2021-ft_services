@@ -26,6 +26,11 @@ print_failed()
 	exit 1
 }
 
+echo -e "${YELLOW}Starting Telegraf${NC}"
+#hostname="wordpress-$(ifconfig|grep inet|grep -v 127.0.0.1|sed -E s/"inet addr:"//|sed -E s/B.*$//|awk '{print $1}')"
+hostname="wordpress"
+sed -i "s/hostname = \"\"/hostname = \"${hostname}\"/g" /etc/telegraf.conf
+./telegraf.sh && print_success || print_failed
 echo -e "${YELLOW}Applying conf with environement var${NC}"
 sed -i "s/ENV_WORDPRESS_MYSQL_DB/$ENV_WORDPRESS_MYSQL_DB/g" /var/www/wordpress/wp-config.php \
 && sed -i "s/'DB_USER', 'ENV_WORDPRESS_MYSQL_USR/'DB_USER', '$ENV_WORDPRESS_MYSQL_USR/" /var/www/wordpress/wp-config.php \

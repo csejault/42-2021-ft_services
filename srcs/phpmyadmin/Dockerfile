@@ -6,7 +6,7 @@
 #    By: csejault <csejault@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/04/15 17:47:31 by csejault          #+#    #+#              #
-#    Updated: 2021/05/11 12:36:34 by csejault         ###   ########.fr        #
+#    Updated: 2021/05/11 15:46:44 by csejault         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,8 +23,8 @@ EXPOSE 		5000/tcp
 ENV			ENV_TELEGRAF_INFLUXDB_NAME="telegraf_db" \
 			ENV_TELEGRAF_INFLUXDB_USR="telegraf_usr" \
 			ENV_TELEGRAF_INFLUXDB_USR_PWD="Le mdp de telegraf est ceci!" \
-			ENV_INFLUXDB_HOST="127.0.0.1" \
-			ENV_MYSQL_HOST="172.17.0.2"
+			ENV_INFLUXDB_HOST="172.17.0.2" \
+			ENV_MYSQL_HOST="172.17.0.4"
 
 ADD			./srcs .
 
@@ -61,6 +61,7 @@ RUN			apk update && apk add --no-cache \
 			&& rm /etc/nginx/conf.d/default.conf \
 			&& mv phpmyadmin_cert.pem /etc/ssl/certs/ \
 			&& mv phpmyadmin_key.pem /etc/ssl/private/ \
+			&& echo "daemon off;" >> /etc/nginx/nginx.conf \
 			&& nginx -t
 
 CMD			["./entrypoint_phpmyadmin.sh"]

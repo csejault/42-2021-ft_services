@@ -13,6 +13,8 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 NC='\033[0m' # No Color
+#hostname="nginx-$(ifconfig|grep inet|grep -v 127.0.0.1|sed -E s/"inet addr:"//|sed -E s/B.*$//|awk '{print $1}')"
+hostname=nginx
 
 print_success()
 {
@@ -27,6 +29,7 @@ print_failed()
 
 #SSL GENERATION
 # openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj '/CN=nginx.csejault'
+sed -i "s/hostname = \"\"/hostname = \"${hostname}\"/g" /etc/telegraf.conf
 echo -e "${YELLOW}Starting Telegraf${NC}"
 ./telegraf.sh && print_success || print_failed
 sed -i "s/ENV_MINIKUBE_HOST/$ENV_MINIKUBE_HOST/g" /etc/nginx/conf.d/csejault.conf

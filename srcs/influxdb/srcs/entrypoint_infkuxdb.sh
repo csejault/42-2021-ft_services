@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #Black        0;30     Dark Gray     1;30
 #Red          0;31     Light Red     1;31
@@ -33,9 +33,28 @@ print_failed()
 }
 
 
-echo -e "STARTING INFLUX"
-influxd &
+#hostname="influxdb-$(ifconfig|grep inet|grep -v 127.0.0.1|sed -E s/"inet addr:"//|sed -E s/B.*$//|awk '{print $1}')"
+hostname="influxdb"
+sed -i "s/hostname = \"\"/hostname = \"${hostname}\"/g" /etc/telegraf.conf
+echo -e "STARTING TELEGRAF"
+./telegraf.sh && print_success || print_failed
 
+echo -e "STARTING INFLUX"
+(influxd &) 1>/dev/null && print_success || print_failed
+#for (( i=1;i<=20;i++ )) do
+#	echo -e "${YELLOW}Wait for influxdb do start --> $i/20${NC}"
+#	mysqladmin status 2>/dev/null
+#	if [[ 0 -eq $? ]]
+#	then
+#		print_success
+#		break
+#	fi
+#	usleep 500000
+#done
+#if [[ i -eq 21 ]]
+#then
+#	print_failed
+#fi
 sleep 1
 
 echo -e "CREATE DB [${CYAN}${TELEGRAF_DB_NAME}${NC}]"

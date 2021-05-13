@@ -6,3 +6,6 @@ sed -i "s/ENV_TELEGRAF_INFLUXDB_USR_PWD/$ENV_TELEGRAF_INFLUXDB_USR_PWD/g" $teleg
 sed -i "s/ENV_TELEGRAF_INFLUXDB_USR/$ENV_TELEGRAF_INFLUXDB_USR/g" $telegraf_config_file|| exit 1
 (telegraf --config $telegraf_config_file &) || exit 1
 exit 0
+
+#skip_database
+#retention
