@@ -1,0 +1,128 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: task-pv-claim-influxdb
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influxdb-deployment
+  labels:
+    app: influxdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: influxdb
+  template:
+    metadata:
+      labels:
+        app: influxdb
+    spec:
+      volumes:
+      - name: influxdb-storage
+        persistentVolumeClaim:
+          claimName: task-pv-claim-influxdb
+      containers:
+      - name: influxdb
+        image: influxdb
+        imagePullPolicy: Never
+        volumeMounts:
+          - mountPath: "/var/lib/influxdb/"
+            name: influxdb-storage
+        ports:
+        - containerPort: 8086
+        env:
+        - name: ENV_TELEGRAF_INFLUXDB_USR_PWD
+          valueFrom:
+            secretKeyRef:
+              name: ftservices-secret
+              key: telegraf_influxdb_usr_pwd
+        - name: ENV_TELEGRAF_INFLUXDB_USR
+          valueFrom:
+            secretKeyRef:
+              name: ftservices-secret
+              key: telegraf_influxdb_usr
+        - name: ENV_TELEGRAF_INFLUXDB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: ftservices-secret
+              key: telegraf_influxdb_db
+        - name: ENV_INFLUXDB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: ftservices-configmap
+              key: influxdb_host
+        - name: ENV_MINIKUBE_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: ftservices-configmap
+              key: minikube_ip
+        - name: ENV_MYSQL_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: ftservices-configmap
+              key: mysql_host
+        - name: ENV_WORDPRESS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: ftservices-configmap
+              key: wordpress_host
+        - name: ENV_PHPMYADMIN_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: ftservices-configmap
+              key: phpmyadmin_host
+        - name: ENV_WORDPRESS_MYSQL_DB
+          valueFrom:
+            secretKeyRef:
+              name: ftservices-secret
+              key: wordpress_mysql_db
+        - name: ENV_WORDPRESS_SITE_ADM
+          valueFrom:
+            secretKeyRef:
+              name: ftservices-secret
+              key: wordpress_site_adm
+        - name: ENV_WORDPRESS_SITE_ADM_PWD
+          valueFrom:
+            secretKeyRef:
+              name: ftservices-secret
+              key: wordpress_site_adm_pwd
+        - name: ENV_WORDPRESS_MYSQL_USR
+          valueFrom:
+            secretKeyRef:
+              name: ftservices-secret
+              key: wordpress_mysql_usr
+        - name: ENV_WORDPRESS_MYSQL_USR_PWD
+          valueFrom:
+            secretKeyRef:
+              name: ftservices-secret
+              key: wordpress_mysql_usr_pwd
+        - name: ENV_PHPMYADMIN_MYSQL_USR
+          valueFrom:
+            secretKeyRef:
+              name: ftservices-secret
+              key: phpmyadmin_mysql_usr
+        - name: ENV_PHPMYADMIN_MYSQL_USR_PWD
+          valueFrom:
+            secretKeyRef:
+              name: ftservices-secret
+              key: phpmyadmin_mysql_usr_pwd
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: influxdb-service
+spec:
+  selector:
+    app: influxdb
+  ports:
+    - protocol: TCP
+      port: 8086
+      targetPort: 8086

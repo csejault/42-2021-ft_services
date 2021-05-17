@@ -5,7 +5,7 @@ metadata:
   labels:
     app: phpmyadmin
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: phpmyadmin
@@ -21,6 +21,26 @@ spec:
         ports:
         - containerPort: 5000
         env:
+        - name: ENV_TELEGRAF_INFLUXDB_USR_PWD
+          valueFrom:
+            secretKeyRef:
+              name: ftservices-secret
+              key: telegraf_influxdb_usr_pwd
+        - name: ENV_TELEGRAF_INFLUXDB_USR
+          valueFrom:
+            secretKeyRef:
+              name: ftservices-secret
+              key: telegraf_influxdb_usr
+        - name: ENV_TELEGRAF_INFLUXDB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: ftservices-secret
+              key: telegraf_influxdb_db
+        - name: ENV_INFLUXDB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: ftservices-configmap
+              key: influxdb_host
         - name: ENV_MYSQL_HOST
           valueFrom:
             configMapKeyRef:

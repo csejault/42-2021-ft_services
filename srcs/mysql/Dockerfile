@@ -6,14 +6,14 @@
 #    By: csejault <csejault@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/30 12:08:38 by csejault          #+#    #+#              #
-#    Updated: 2021/05/11 15:10:28 by csejault         ###   ########.fr        #
+#    Updated: 2021/05/17 13:38:20 by csejault         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 #MARIADB
 #USE SSH insted of 3306?
 
-FROM		alpine
+FROM		alpine:3.12
 
 LABEL		maintainer="csejault"
 
@@ -40,7 +40,8 @@ CMD			["./entrypoint_mysql.sh"]
 
 ADD			./srcs .
 
-RUN			apk update \
+RUN         echo -e "https://dl-cdn.alpinelinux.org/alpine/v3.13/main/\nhttps://dl-cdn.alpinelinux.org/alpine/v3.13/community/\n" >> /etc/apk/repositories \
+			&& apk update \
 			&& apk add --no-cache \
 			bash \
 			mariadb\
@@ -49,9 +50,6 @@ RUN			apk update \
 			openrc \
 			telegraf \
 			&& mv telegraf.conf /etc/ \
-			&& openrc \
-			&& touch /run/openrc/softlevel \
-			&& rc-service mariadb setup \
 			&& mv mariadb-server.cnf /etc/my.cnf.d/
 
 

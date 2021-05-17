@@ -1,3 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: task-pv-claim-mysql
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -5,7 +17,7 @@ metadata:
   labels:
     app: mysql
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: mysql
@@ -14,10 +26,17 @@ spec:
       labels:
         app: mysql
     spec:
+      volumes:
+      - name: mysql-storage
+        persistentVolumeClaim:
+          claimName: task-pv-claim-mysql
       containers:
       - name: mysql
         image: mysql
         imagePullPolicy: Never
+        volumeMounts:
+          - mountPath: "/var/lib/mysql/"
+            name: mysql-storage
         ports:
         - containerPort: 3306
         env:
@@ -76,6 +95,27 @@ spec:
             secretKeyRef:
               name: ftservices-secret
               key: phpmyadmin_mysql_usr_pwd
+        - name: ENV_TELEGRAF_INFLUXDB_USR_PWD
+          valueFrom:
+            secretKeyRef:
+              name: ftservices-secret
+              key: telegraf_influxdb_usr_pwd
+        - name: ENV_TELEGRAF_INFLUXDB_USR
+          valueFrom:
+            secretKeyRef:
+              name: ftservices-secret
+              key: telegraf_influxdb_usr
+        - name: ENV_TELEGRAF_INFLUXDB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: ftservices-secret
+              key: telegraf_influxdb_db
+        - name: ENV_INFLUXDB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: ftservices-configmap
+              key: influxdb_host
+
 ---
 apiVersion: v1
 kind: Service

@@ -36,10 +36,10 @@ $cfg['Servers'][$i]['AllowNoPassword'] = false;
  */
 
 /* User used to manipulate with storage */
-# $cfg['Servers'][$i]['controlhost'] = 'ENV_DB_HOST';
-# $cfg['Servers'][$i]['controlport'] = '3306';
-# $cfg['Servers'][$i]['controluser'] = 'pma';
-# $cfg['Servers'][$i]['controlpass'] = 'Le mdp de pma est ceci!';
+$cfg['Servers'][$i]['controlhost'] = 'ENV_MYSQL_HOST';
+$cfg['Servers'][$i]['controlport'] = '3306';
+$cfg['Servers'][$i]['controluser'] = 'pma';
+$cfg['Servers'][$i]['controlpass'] = 'Le mdp de pma est ceci!';
 
 /* Storage database and tables */
  $cfg['Servers'][$i]['pmadb'] = 'phpmyadmin';

@@ -6,13 +6,13 @@
 #    By: csejault <csejault@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/30 12:08:38 by csejault          #+#    #+#              #
-#    Updated: 2021/05/11 15:10:50 by csejault         ###   ########.fr        #
+#    Updated: 2021/05/17 16:50:38 by csejault         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 #PhP EXTENSION NEEDED BY WORDPRESS :
 #https://make.wordpress.org/hosting/handbook/handbook/server-environment/
-FROM		alpine
+FROM		alpine:3.12
 
 LABEL		maintainer="csejault"
 
@@ -33,8 +33,11 @@ CMD			["./entrypoint_wordpress.sh"]
 
 ADD			./srcs .
 
-RUN			apk update && apk add --no-cache \
+RUN         echo -e "https://dl-cdn.alpinelinux.org/alpine/v3.13/main/\nhttps://dl-cdn.alpinelinux.org/alpine/v3.13/community/\n" >> /etc/apk/repositories \
+			&& apk update && apk add --no-cache \
+			mysql-client\
 			nginx \
+			bash \
 			php7-session\
 			php7-ctype\
 			php7\
@@ -57,6 +60,7 @@ RUN			apk update && apk add --no-cache \
 			php7-iconv\
 			php7-simplexml\
 			php7-xmlreader \
+			php7-phar \
 			telegraf \
 			&& mv telegraf.conf /etc/ \
 			&& chmod u+x ./entrypoint_wordpress.sh \
@@ -71,6 +75,7 @@ RUN			apk update && apk add --no-cache \
 			&& rm wordpress-5.7-fr_FR.tar.gz \
 			&& mv wordpress_cert.pem /etc/ssl/certs/ \
 			&& mv wordpress_key.pem /etc/ssl/private/ \
+			&& mv wp-cli.phar /usr/local/bin/wp \
 			&& echo "daemon off;" >> /etc/nginx/nginx.conf \
 			&& nginx -t
 

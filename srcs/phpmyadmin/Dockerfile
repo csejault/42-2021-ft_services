@@ -6,13 +6,13 @@
 #    By: csejault <csejault@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/04/15 17:47:31 by csejault          #+#    #+#              #
-#    Updated: 2021/05/11 15:46:44 by csejault         ###   ########.fr        #
+#    Updated: 2021/05/13 18:23:25 by csejault         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 #https://docs.phpmyadmin.net/en/latest/require.html
 
-FROM		alpine
+FROM		alpine:3.12
 
 LABEL		maintainer="csejault"
 
@@ -28,7 +28,8 @@ ENV			ENV_TELEGRAF_INFLUXDB_NAME="telegraf_db" \
 
 ADD			./srcs .
 
-RUN			apk update && apk add --no-cache \
+RUN         echo -e "https://dl-cdn.alpinelinux.org/alpine/v3.13/main/\nhttps://dl-cdn.alpinelinux.org/alpine/v3.13/community/\n" >> /etc/apk/repositories \
+			&& apk update && apk add --no-cache \
 			php7\
 			php7-common\
 			php7-fpm\

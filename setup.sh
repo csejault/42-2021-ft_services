@@ -33,6 +33,7 @@ NC='\033[0m' # No Color
 #brew install minikube
 
 v_os="42mac"
+v_mac_os="42mac"
 
 f_42mac()
 {
@@ -141,6 +142,8 @@ f_kube_full_reset()
 		mkdir -p $v_goinfre_path/.minikube
 		ln -sf $v_goinfre_path/.minikube ~/.minikube
 		minikube config set vm-driver virtualbox
+		minikube config set memory 4096
+		minikube config set cpus 3
 		minikube start
 		eval $(minikube -p minikube docker-env)
 	fi
@@ -168,6 +171,8 @@ f_kube_apply_kube_conf()
 
 f_kube_apply_deployment()
 {
+	kubectl apply -f srcs/influxdb.yaml ||return 1
+	kubectl apply -f srcs/grafana.yaml ||return 1
 	kubectl apply -f srcs/mysql.yaml ||return 1
 	kubectl apply -f srcs/phpmyadmin.yaml ||return 1
 	kubectl apply -f srcs/wordpress.yaml ||return 1

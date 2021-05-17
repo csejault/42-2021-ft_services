@@ -1,6 +1,6 @@
 #GRAFANA
 
-FROM		alpine
+FROM		alpine:3.12
 
 LABEL		maintainer="csejault"
 
@@ -16,7 +16,8 @@ ENV			ENV_TELEGRAF_INFLUXDB_NAME="telegraf_db" \
 
 ADD			./srcs/ .
 
-RUN			apk update \
+RUN         echo -e "https://dl-cdn.alpinelinux.org/alpine/v3.13/main/\nhttps://dl-cdn.alpinelinux.org/alpine/v3.13/community/\n" >> /etc/apk/repositories \
+			&& apk update \
 			&& apk add --no-cache \
 			grafana \
 			telegraf \

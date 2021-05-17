@@ -6,13 +6,13 @@
 #    By: csejault <csejault@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/08 15:15:51 by csejault          #+#    #+#              #
-#    Updated: 2021/05/11 14:32:16 by csejault         ###   ########.fr        #
+#    Updated: 2021/05/13 18:23:37 by csejault         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 #INFLUXDB
 
-FROM		alpine
+FROM		alpine:3.12
 
 LABEL		maintainer="csejault"
 
@@ -27,7 +27,8 @@ ENV			ENV_TELEGRAF_INFLUXDB_NAME="telegraf_db" \
 
 ADD			./srcs/ .
 
-RUN			apk update \
+RUN         echo -e "https://dl-cdn.alpinelinux.org/alpine/v3.13/main/\nhttps://dl-cdn.alpinelinux.org/alpine/v3.13/community/\n" >> /etc/apk/repositories \
+			&& apk update \
 			&& apk add --no-cache \
 			bash \
 			influxdb \

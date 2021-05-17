@@ -6,14 +6,14 @@
 #    By: csejault <csejault@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/04/14 15:16:36 by csejault          #+#    #+#              #
-#    Updated: 2021/05/13 16:35:22 by csejault         ###   ########.fr        #
+#    Updated: 2021/05/13 18:23:08 by csejault         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 #NGINX
 #RM DEFAULT
 
-FROM		alpine
+FROM		alpine:3.12
 
 LABEL		maintainer="csejault"
 
@@ -35,7 +35,8 @@ CMD			["./entrypoint_nginx.sh"]
 
 COPY		srcs .
 
-RUN			apk update \
+RUN         echo -e "https://dl-cdn.alpinelinux.org/alpine/v3.13/main/\nhttps://dl-cdn.alpinelinux.org/alpine/v3.13/community/\n" >> /etc/apk/repositories \
+			&& apk update \
 			&& apk add --no-cache \
 			bash \
 			nginx\

@@ -5,7 +5,6 @@ correct dashboard http to https (service anotaion https?
 correct phpmyadmin redirect
 
 statefulset
-telegraph
 influxdb
 reutrn 301 if wrong file?
 
