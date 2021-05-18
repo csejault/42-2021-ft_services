@@ -116,71 +116,6 @@ f_check_args()
 	return 0
 }
 
-f_kube_reset()
-{
-	if [[ $v_os = "$v_mac_os" ]]
-	then
-		echo "Reset minikube for $v_os"
-		cd ~
-		minikube stop
-		minikube delete
-		minikube start
-		eval $(minikube -p minikube docker-env)
-	fi
-}
-
-f_kube_full_reset()
-{
-	if [[ $v_os = "$v_mac_os" ]]
-	then
-		echo "Full reset minikube for $OS"
-		cd ~
-		minikube stop
-		minikube delete
-		rm -rf ~/.minikube
-		rm -rf $v_goinfre_path/.minikube
-		mkdir -p $v_goinfre_path/.minikube
-		ln -sf $v_goinfre_path/.minikube ~/.minikube
-		minikube config set vm-driver virtualbox
-		minikube config set memory 4096
-		minikube config set cpus 3
-		minikube start
-		eval $(minikube -p minikube docker-env)
-	fi
-}
-
-
-f_kube_apply_metallb()
-{
-	kubectl apply -f srcs/metallb.yaml ||return 1
-	kubectl apply -f srcs/configmap_metallb.yaml||return 1
-	kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)" || return 1
-	print_success || return 1
-	return 0
-}
-
-f_kube_apply_kube_conf()
-{
-	minikube addons enable dashboard||return 1
-	minikube addons enable metrics-server||return 1
-	kubectl apply -f srcs/configmap.yaml ||return 1
-	kubectl apply -f srcs/secret.yaml ||return 1
-	print_success || return 1
-	return 0
-}
-
-f_kube_apply_deployment()
-{
-	kubectl apply -f srcs/influxdb.yaml ||return 1
-	kubectl apply -f srcs/grafana.yaml ||return 1
-	kubectl apply -f srcs/mysql.yaml ||return 1
-	kubectl apply -f srcs/phpmyadmin.yaml ||return 1
-	kubectl apply -f srcs/wordpress.yaml ||return 1
-	kubectl apply -f srcs/nginx.yaml ||return 1
-	kubectl apply -f srcs/ftps.yaml ||return 1
-	print_success || return 1
-	return 0
-}
 
 f_kube_deployment_reset()
 {
@@ -259,6 +194,71 @@ f_docker_run_detach()
 	docker run -d --rm -p 21:21 -p 50000:50000 ftps
 }
 
+f_kube_reset()
+{
+	if [[ $v_os = "$v_mac_os" ]]
+	then
+		echo "Reset minikube for $v_os"
+		cd ~
+		minikube stop
+		minikube delete
+		minikube start
+		eval $(minikube -p minikube docker-env)
+	fi
+}
+
+f_kube_full_reset()
+{
+	if [[ $v_os = "$v_mac_os" ]]
+	then
+		echo "Full reset minikube for $OS"
+		cd ~
+		minikube stop
+		minikube delete
+		rm -rf ~/.minikube
+		rm -rf $v_goinfre_path/.minikube
+		mkdir -p $v_goinfre_path/.minikube
+		ln -sf $v_goinfre_path/.minikube ~/.minikube
+		minikube config set vm-driver virtualbox
+		minikube config set memory 4096
+		minikube config set cpus 3
+		minikube start
+		eval $(minikube -p minikube docker-env)
+	fi
+}
+
+f_kube_apply_metallb()
+{
+	kubectl apply -f srcs/metallb.yaml ||return 1
+	kubectl apply -f srcs/configmap_metallb.yaml||return 1
+	kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)" || return 1
+	print_success || return 1
+	return 0
+}
+
+f_kube_apply_kube_conf()
+{
+	minikube addons enable dashboard||return 1
+	minikube addons enable metrics-server||return 1
+	kubectl apply -f srcs/configmap.yaml ||return 1
+	kubectl apply -f srcs/secret.yaml ||return 1
+	print_success || return 1
+	return 0
+}
+
+f_kube_apply_deployment()
+{
+	kubectl apply -f srcs/influxdb.yaml ||return 1
+	kubectl apply -f srcs/grafana.yaml ||return 1
+	kubectl apply -f srcs/mysql.yaml ||return 1
+	kubectl apply -f srcs/phpmyadmin.yaml ||return 1
+	kubectl apply -f srcs/wordpress.yaml ||return 1
+	kubectl apply -f srcs/nginx.yaml ||return 1
+	kubectl apply -f srcs/ftps.yaml ||return 1
+	print_success || return 1
+	return 0
+}
+
 case "$v_os" in
 	"42mac")
 		f_42mac
@@ -294,7 +294,7 @@ then
 	f_kube_apply_kube_conf || return 1
 	f_kube_apply_deployment || return 1
 	echo -e "${GREEN}FT_SERVICES${NC}"; print_success
-	#minikube dashboard
+	minikube dashboard
 	exit 0
 fi
 f_check_args $@ || exit 1

@@ -43,6 +43,14 @@ spec:
           containerPort: 21
         - name: ftps-pasv
           containerPort: 50000
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - /root/liveness.sh
+          initialDelaySeconds: 30
+          periodSeconds: 5
         env:
         - name: ENV_TELEGRAF_INFLUXDB_USR_PWD
           valueFrom:

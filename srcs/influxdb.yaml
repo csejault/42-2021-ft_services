@@ -38,6 +38,14 @@ spec:
             name: influxdb-storage
         ports:
         - containerPort: 8086
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - /root/liveness.sh
+          initialDelaySeconds: 30
+          periodSeconds: 5
         env:
         - name: ENV_TELEGRAF_INFLUXDB_USR_PWD
           valueFrom:

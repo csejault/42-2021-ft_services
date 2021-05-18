@@ -64,7 +64,6 @@ fi
 #service mysql start>>/dev/null && print_success || print_failed
 WP_DB_USER_PASSWORD=$( echo "SELECT PASSWORD('${ENV_WORDPRESS_MYSQL_USR_PWD}');"|mysql -u root|grep '*' )
 PMA_DB_USER_PASSWORD=$( echo "SELECT PASSWORD('${ENV_PHPMYADMIN_MYSQL_USR_PWD}');"|mysql -u root|grep '*' )
-echo -e "$ENV_WORDPRESS_MYSQL_USR_PWD hasshed = $WP_DB_USER_PASSWORD"
 
 echo -e "CREATE DB [${CYAN}${WP_DB_NAME}${NC}]"
 echo "CREATE DATABASE IF NOT EXISTS ${WP_DB_NAME};" |mysql -u root && print_success || print_failed
@@ -92,8 +91,12 @@ echo "FLUSH PRIVILEGES;"|mysql -u root && print_success || print_failed
 #sed  -i -E "s+\(2\, \'home\', \'https://[0-9]?[0-9]?[0-9]?\.[0-9]?[0-9]?[0-9]\.[0-9]?[0-9]?[0-9]\.[0-9]?[0-9]?[0-9]+(2, 'home', 'https://$ENV_MINIKUBE_HOST+g" "./wp_db.sql"
 #echo -e "IMPORT SQL DB ON [${CYAN}${WP_DB_NAME}${NC}]"
 #mysql  wp_db -u root < ./wp_db.sql && print_success || print_failed
-#echo -e "IMPORT SQL DB ON [${CYAN}${PMA_DB_NAME}${NC}]"
-#mysql phpmyadmin -u root < ./phpmyadmin.sql && print_success || print_failed
+echo "show tables from phpmyadmin;"|mysql|grep pma__table_info &> /dev/nul
+if [[ $? -ne 0 ]]
+then
+	echo -e "CREATE SQL TABLE ON [${CYAN}${PMA_DB_NAME}${NC}]"
+	mysql phpmyadmin -u root < ./phpmyadmin.sql && print_success || print_failed
+fi
 
 ip a|grep inet
 #rc-service mariadb start

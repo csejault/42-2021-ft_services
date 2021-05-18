@@ -8,4 +8,4 @@ data:
   wordpress_host: wordpress-service
   phpmyadmin_host: phpmyadmin-service
   influxdb_host: influxdb-service
-  minikube_ip: 192.168.99.165
+  minikube_ip: 192.168.99.170

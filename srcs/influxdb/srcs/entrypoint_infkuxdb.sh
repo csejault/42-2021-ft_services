@@ -41,21 +41,20 @@ echo -e "STARTING TELEGRAF"
 
 echo -e "STARTING INFLUX"
 (influxd run -config /etc/influxdb.conf &) 1>/dev/null && print_success || print_failed
-#for (( i=1;i<=20;i++ )) do
-#	echo -e "${YELLOW}Wait for influxdb do start --> $i/20${NC}"
-#	mysqladmin status 2>/dev/null
-#	if [[ 0 -eq $? ]]
-#	then
-#		print_success
-#		break
-#	fi
-#	usleep 500000
-#done
-#if [[ i -eq 21 ]]
-#then
-#	print_failed
-#fi
-sleep 1
+for (( i=1;i<=60;i++ )) do
+	echo -e "${YELLOW}Wait for influxdb do start --> $i/60${NC}"
+	echo -n "show databases"|influx
+	if [[ 0 -eq $? ]]
+	then
+		print_success
+		break
+	fi
+	sleep 1
+done
+if [[ i -eq 61 ]]
+then
+	print_failed
+fi
 
 echo -e "CREATE DB [${CYAN}${TELEGRAF_DB_NAME}${NC}]"
 (influx -execute "CREATE DATABASE $TELEGRAF_DB_NAME")&& print_success || print_failed
@@ -69,4 +68,5 @@ echo -e "GRANT ALL PRIVILEGES TO [${CYAN}${TELEGRAF_DB_USER}${NC}] ON [${CYAN}${
 influx -execute "CREATE RETENTION POLICY "a_year" ON "$TELEGRAF_DB_NAME" DURATION 52w REPLICATION 1 DEFAULT"
 kill -15 $(ps|grep -e influxd |grep -v grep|awk '{print $1}')
 influxd run -config /etc/influxdb.conf
+sleep 600
 exit 0

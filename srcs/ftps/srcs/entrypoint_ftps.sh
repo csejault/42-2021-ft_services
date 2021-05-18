@@ -27,6 +27,7 @@ sed -i "s/hostname = \"\"/hostname = \"${hostname}\"/g" /etc/telegraf.conf
 
 echo -e "${YELLOW}Creating ftps user${NC}"
 adduser -h /home/ftp -s /sbin/nologin -D $ENV_FTPS_USR && print_success || print_failed
+echo "up" > /home/ftp/.DoNotDelete_ForHealth
 
 echo -e "${YELLOW}Creating password ftps user${NC}"
 (echo "$ENV_FTPS_USR_PWD";echo "$ENV_FTPS_USR_PWD")|passwd $ENV_FTPS_USR  && print_success || print_failed
@@ -39,4 +40,5 @@ touch /var/log/vsftpd.log && print_success || print_failed
 
 echo -e "${YELLOW}Launching ftps${NC}"
 vsftpd /etc/vsftpd/vsftpd.conf && print_success || print_failed
+sleep 200
 

@@ -39,6 +39,14 @@ spec:
             name: mysql-storage
         ports:
         - containerPort: 3306
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - /root/liveness.sh
+          initialDelaySeconds: 30
+          periodSeconds: 5
         env:
         - name: ENV_MINIKUBE_HOST
           valueFrom:

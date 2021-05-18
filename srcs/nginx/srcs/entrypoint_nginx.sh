@@ -35,4 +35,4 @@ echo -e "${YELLOW}Starting Telegraf${NC}"
 sed -i "s/ENV_MINIKUBE_HOST/$ENV_MINIKUBE_HOST/g" /etc/nginx/conf.d/csejault.conf
 echo -e "${YELLOW}Starting NGINX${NC}"
 nginx -t && nginx && print_success || print_failed
-exit 0
+exit 1

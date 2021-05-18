@@ -61,14 +61,14 @@ if [[ 0 -eq $? ]]
 then
 	print_success
 else 
-	wp user create jean jean@peux.plus --path=/var/www/wordpress && print_success || print_failed
+	wp user create jean jean@peux.plus --path=/var/www/wordpress --user_pass="jean" && print_success || print_failed
 fi
 wp user list --path=/var/www/wordpress |grep chris
 if [[ 0 -eq $? ]]
 then
 	print_success
 else 
-	wp user create chris chris@mende.pneu --path=/var/www/wordpress && print_success || print_failed
+	wp user create chris chris@mende.pneu --path=/var/www/wordpress --user_pass="chris" && print_success || print_failed
 fi
 
 
