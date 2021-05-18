@@ -45,7 +45,7 @@ for (( i=1;i<=60;i++ )) do
 	echo "exit"|mysql -h $ENV_MYSQL_HOST -u $ENV_WORDPRESS_MYSQL_USR --password="$ENV_WORDPRESS_MYSQL_USR_PWD"
 	if [[ 0 -eq $? ]]
 	then
-		wp core install --path="/var/www/wordpress" --url="$ENV_MINIKUBE_HOST:5050"  --title="csetjault's ft_services" --admin_user="$ENV_WORDPRESS_SITE_ADM" --admin_password="$ENV_WORDPRESS_SITE_ADM_PWD" --admin_email="clement.sejault@outlook.com"&& print_success || print_failed
+		wp core install --path="/var/www/wordpress" --url="https://$ENV_MINIKUBE_HOST:5050"  --title="csetjault's ft_services" --admin_user="$ENV_WORDPRESS_SITE_ADM" --admin_password="$ENV_WORDPRESS_SITE_ADM_PWD" --admin_email="clement.sejault@outlook.com"&& print_success || print_failed
 		break
 	fi
 	sleep 1

@@ -1,18 +1,4 @@
-
-
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    setup.sh                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: csejault <csejault@student.42.fr>          +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2021/04/09 15:31:47 by csejault          #+#    #+#              #
-#    Updated: 2021/04/12 12:13:04 by csejault         ###   ########.fr        #
-#                                                                              #
-
-
-
+#!/bin/bash
 #Black        0;30     Dark Gray     1;30
 #Red          0;31     Light Red     1;31
 #Green        0;32     Light Green   1;32
@@ -32,8 +18,9 @@ NC='\033[0m' # No Color
 #rm -rf $HOME/.brew && git clone --depth=1 https://github.com/Homebrew/brew $HOME/.brew && echo 'export PATH=$HOME/.brew/bin:$PATH' >> $HOME/.zshrc && source $HOME/.zshrc && brew update
 #brew install minikube
 
-v_os="42mac"
+v_os="42xubuntu"
 v_mac_os="42mac"
+v_kube_needed_version="1.20.0"
 
 f_42mac()
 {
@@ -43,6 +30,14 @@ f_42mac()
 f_debian()
 {
 	v_path_setup="/home/csejault/42-2021-ft_services"
+}
+f_42xubuntu()
+{
+	sudo -A ./srcs/user42 usermod -aG docker $USER && newgrp docker
+	v_path_setup="./"
+	minikube config set vm-driver docker
+	minikube config set memory 2048
+	minikube config set cpus 2
 }
 
 print_success()
@@ -133,8 +128,13 @@ f_check_kube_version()
 	minikube_version=$( minikube version |grep version|sed 's/minikube version: v//g' )
 	if [[ $minikube_version != "$v_kube_needed_version" ]]
 	then
-		echo "Minikube version is not $v_kube_needed_version"
+		echo "Minikube version is not $v_kube_needed_version, Installing..."
+		curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 || return 1
+		sudo install minikube-linux-amd64 /usr/local/bin/minikube || return 1
+	else
+		echo "Minikube version OK"
 	fi
+	return 0
 }
 
 f_docker_stop()
@@ -280,6 +280,7 @@ v_path_dock_grafana="$v_path_setup/srcs/grafana"
 
 if [[ $# -eq 0 ]]
 then
+	f_check_kube_version||return 1
 	if [[ $( minikube status|grep host|awk '{print $2}' ) != "Running" ]]
 	then
 		echo "Starting minikube"
