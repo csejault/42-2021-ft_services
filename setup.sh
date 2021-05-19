@@ -14,9 +14,17 @@ YELLOW='\033[0;33m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
+#BEFORE LAUNCHING
+#sudo systemctl disable nginx
+#sudo systemctl disable mysql
+# service nginx stop  
+# service mysql stop 
+#sudo usermod -aG docker $USER && newgrp docker
+
 #To Install brew
 #rm -rf $HOME/.brew && git clone --depth=1 https://github.com/Homebrew/brew $HOME/.brew && echo 'export PATH=$HOME/.brew/bin:$PATH' >> $HOME/.zshrc && source $HOME/.zshrc && brew update
 #brew install minikube
+
 
 v_os="42xubuntu"
 v_mac_os="42mac"
@@ -33,11 +41,10 @@ f_debian()
 }
 f_42xubuntu()
 {
-	sudo -A ./srcs/user42 usermod -aG docker $USER && newgrp docker
 	v_path_setup="./"
-	minikube config set vm-driver docker
-	minikube config set memory 2048
-	minikube config set cpus 2
+	minikube config set vm-driver docker &>/dev/null
+	minikube config set memory 2048 &>/dev/null
+	minikube config set cpus 2 &>/dev/null
 }
 
 print_success()
@@ -76,7 +83,8 @@ f_check_args()
 				shift
 				;;
 			"dr")
-				f_docker_run_detach
+				f_docker_run_detach $1
+				shift
 				;;
 			"--kube-reset")
 				f_kube_reset
@@ -104,7 +112,7 @@ f_check_args()
 				;;
 			*)
 				echo "Wrong args"
-				return 1
+				print_failed
 				;;
 		esac
 	done
@@ -151,8 +159,8 @@ f_docker_clean()
 {
 	docker kill $(docker ps -q)
 	docker rm $(docker ps -a -q)
-	docker rmi $(docker images -q -f dangling=true)
-	docker rmi $(docker images -q)
+	#docker rmi $(docker images -q -f dangling=true)
+	#docker rmi $(docker images -q)
 }
 
 f_docker_build()
@@ -182,16 +190,47 @@ f_docker_build()
 
 f_docker_run_detach()
 {
-	docker kill $(docker ps -q)
-	docker rm $(docker ps -a -q)
 	f_docker_build all
-	docker run -d --rm -p 8086:8086 influxdb
-	docker run -d --rm -p 3000:3000 grafana
-	docker run -d --rm -p 3306:3306 mysql
-	docker run -d --rm -p 5000:5000 phpmyadmin
-	docker run -d --rm -p 5050:5050 wordpress
-	docker run -d --rm -p 80:80 -p 443:443 nginx
-	docker run -d --rm -p 21:21 -p 50000:50000 ftps
+	if [[ $1 == "all" ]]
+	then
+		docker kill $(docker ps -q)
+		docker rm $(docker ps -a -q)
+		docker run -d --rm -p 8086:8086 influxdb
+		docker run -d --rm -p 3000:3000 grafana
+		docker run -d --rm -p 3306:3306 mysql
+		docker run -d --rm -p 5000:5000 phpmyadmin
+		docker run -d --rm -p 5050:5050 wordpress
+		docker run -d --rm -p 80:80 -p 443:443 nginx
+		docker run -d --rm -p 21:21 -p 50000:50000 ftps
+	else
+		case $1 in 
+			"influxdb")
+				docker run -d --rm -p 8086:8086 influxdb
+				;;
+			"grafana")
+				docker run -d --rm -p 3000:3000 grafana
+				;;
+			"mysql")
+				docker run -d --rm -p 3306:3306 mysql
+				;;
+			"phpmyadmin")
+				docker run -d --rm -p 5000:5000 phpmyadmin
+				;;
+			"wordpress")
+				docker run -d --rm -p 5050:5050 wordpress
+				;;
+			"nginx")
+				docker run -d --rm -p 80:80 -p 443:443 nginx
+				;;
+			"ftps")
+				docker run -d --rm -p 21:21 -p 50000:50000 ftps
+				;;
+			*)
+				echo "Wrong args"
+				print_failed
+				;;
+		esac
+	fi
 }
 
 f_kube_reset()

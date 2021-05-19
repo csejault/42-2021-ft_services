@@ -27,7 +27,10 @@ ENV			ENV_TELEGRAF_INFLUXDB_NAME="telegraf_db" \
 			ENV_MYSQL_HOST="172.17.0.4" \
 			ENV_WORDPRESS_MYSQL_DB="wp_db" \
 			ENV_WORDPRESS_MYSQL_USR="wp_adm" \
-			ENV_WORDPRESS_MYSQL_USR_PWD="Le mdp de mysql est ceci!"
+			ENV_WORDPRESS_MYSQL_USR_PWD="Le mdp de mysql est ceci!" \
+			ENV_WORDPRESS_SITE_ADM="csejault_adm" \
+			ENV_WORDPRESS_SITE_ADM_PWD="Le mdp de wordpress est ceci!" \
+			ENV_MINIKUBE_HOST="127.0.0.1"
 
 CMD			["./entrypoint_wordpress.sh"]
 

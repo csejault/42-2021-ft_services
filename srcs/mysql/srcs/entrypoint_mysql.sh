@@ -44,7 +44,7 @@ echo -e "STARTING TELEFRAF"
 mysql_install_db --user=mysql --datadir="/var/lib/mysql"
 
 echo -e "STARTING MYSQL"
-(mysqld_safe --datadir="/var/lib/mysql" &) 1>/dev/null && print_success || print_failed
+(mysqld_safe --datadir="/var/lib/mysql" &) && print_success || print_failed
 
 for (( i=1;i<=60;i++ )) do
 	echo -e "${YELLOW}Wait for mariadb do start --> $i/60${NC}"

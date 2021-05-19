@@ -9,4 +9,4 @@ data:
     - name: pool-ftservices
       protocol: layer2
       addresses:
-      - 192.168.99.170-192.168.99.170
+      - 192.168.49.2-192.168.49.2
