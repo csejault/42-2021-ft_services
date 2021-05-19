@@ -63,10 +63,7 @@ spec:
               name: ftservices-secret
               key: telegraf_influxdb_db
         - name: ENV_INFLUXDB_HOST
-          valueFrom:
-            configMapKeyRef:
-              name: ftservices-configmap
-              key: influxdb_host
+          value: "127.0.0.1"
         - name: ENV_MINIKUBE_HOST
           valueFrom:
             configMapKeyRef:
